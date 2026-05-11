@@ -17,4 +17,4 @@ onto platforms like Customer.io, Klaviyo, Braze, and others.
 HTML · CSS · Vanilla JavaScript · No dependencies
 
 ## Live demo
-[Open the tool →](https://yourusername.github.io/wm-client-intake-dashboard/wm_intake_dashboard.html)
+https://vi-pro-lab.github.io/wm-client-intake-dashboard/wm_intake_dashboard.html
