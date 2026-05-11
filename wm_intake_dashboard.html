@@ -35,23 +35,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .nav-dot.done{background:var(--green)}
 .nav-dot.warn{background:#F59E0B}
 .nav-dot.risk{background:#EF4444}
-/* CLIENT LIST */
-.client-list{display:flex;flex-direction:column;gap:2px;padding:4px 8px}
-.client-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:all .12s;border:1px solid transparent;position:relative}
-.client-row:hover{background:var(--bg);border-color:var(--border)}
-.client-row.active{background:var(--bg);border-color:var(--orange)}
-.cr-info{flex:1;min-width:0}
-.cr-name{font-size:13px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cr-sub{font-size:11px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cr-badge{font-size:9px;font-weight:500;padding:2px 6px;border-radius:100px;flex-shrink:0;font-family:'DM Mono',monospace}
-.crb-high{background:#4A1212;color:#FBBFBF}
-.crb-med{background:#4A2E00;color:#FCD89A}
-.crb-low{background:#0F3B24;color:#A7D9BC}
-.crb-none{background:var(--surface2);color:var(--text-tertiary)}
-.cr-del{width:18px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--text-tertiary);cursor:pointer;opacity:0;transition:all .12s;font-size:16px;line-height:1;border:none;flex-shrink:0}
-.client-row:hover .cr-del{opacity:1}
-.cr-del:hover{background:var(--red-bg);color:var(--red)}
-.no-clients-msg{padding:14px 16px;font-size:12px;color:var(--text-tertiary);text-align:center;line-height:1.6}
+/* CLIENT DROPDOWN */
+.client-dropdown-wrap{position:relative;display:flex;align-items:center}
+.client-dropdown{width:100%;padding:8px 28px 8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-primary);background:var(--surface);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .12s}
+.client-dropdown:focus{border-color:var(--orange)}
+.dropdown-arrow{position:absolute;right:9px;font-size:11px;color:var(--text-tertiary);pointer-events:none}
 /* PROGRESS */
 .sb-progress{margin:10px 12px 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px}
 .progress-label{font-size:10px;color:var(--text-tertiary);margin-bottom:7px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
@@ -193,6 +181,46 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 /* TOAST */
 .toast{position:fixed;bottom:22px;right:22px;background:var(--text-primary);color:#F5F3EE;font-size:12px;padding:10px 18px;border-radius:var(--radius);opacity:0;transition:opacity .2s;pointer-events:none;font-family:'DM Mono',monospace;z-index:999}
 .toast.show{opacity:1}
+/* PROJECT TRACKER */
+.phase-board{display:flex;flex-direction:column;gap:6px}
+.phase-row{display:grid;grid-template-columns:28px 1fr 110px 120px 90px 32px;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .12s}
+.phase-row:hover{border-color:var(--border-strong)}
+.phase-row.ph-done{background:var(--green-bg);border-color:var(--green-bd)}
+.phase-row.ph-active{background:var(--amber-bg);border-color:var(--amber-bd)}
+.phase-row.ph-blocked{background:var(--red-bg);border-color:var(--red-bd)}
+.phase-handle{color:var(--text-tertiary);font-size:14px;cursor:grab;user-select:none;text-align:center}
+.phase-name{font-size:13px;font-weight:500;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;color:var(--text-primary);width:100%;border-bottom:1px dashed transparent}
+.phase-name:focus{border-bottom-color:var(--border-strong)}
+.phase-status{font-size:11px;font-family:'DM Mono',monospace;padding:4px 8px;border-radius:100px;border:none;outline:none;cursor:pointer;font-weight:500;appearance:none;-webkit-appearance:none;text-align:center;width:100%}
+.phase-status.st-todo{background:var(--surface2);color:var(--text-secondary)}
+.phase-status.st-active{background:var(--amber-bg);color:var(--amber)}
+.phase-status.st-done{background:var(--green-bg);color:var(--green)}
+.phase-status.st-blocked{background:var(--red-bg);color:var(--red)}
+.phase-input{font-size:11px;background:none;border:none;outline:none;font-family:'DM Mono',monospace;color:var(--text-secondary);width:100%;border-bottom:1px dashed transparent}
+.phase-input:focus{border-bottom-color:var(--border)}
+.phase-del{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--text-tertiary);cursor:pointer;opacity:0;transition:opacity .12s;font-size:16px;border:none;flex-shrink:0}
+.phase-row:hover .phase-del{opacity:1}
+.phase-del:hover{background:var(--red-bg);color:var(--red)}
+.phase-col-hdr{display:grid;grid-template-columns:28px 1fr 110px 120px 90px 32px;gap:10px;padding:4px 14px;margin-bottom:4px}
+.phase-col-hdr span{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary)}
+/* BLOCKER CARDS */
+.blocker-board{display:flex;flex-direction:column;gap:6px}
+.blocker-card{display:grid;grid-template-columns:64px 1fr 100px 110px 90px 32px;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .12s}
+.blocker-card:hover{border-color:var(--border-strong)}
+.blocker-card.bp0{border-left:3px solid #EF4444}
+.blocker-card.bp1{border-left:3px solid #F59E0B}
+.blocker-card.bp2{border-left:3px solid var(--border-strong)}
+.blocker-card.bc-resolved{opacity:.5;background:var(--surface2)}
+.bl-priority{font-size:10px;font-family:'DM Mono',monospace;font-weight:500;padding:3px 7px;border-radius:100px;border:none;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;text-align:center;width:100%}
+.bl-priority.bp0{background:#4A1212;color:#FBBFBF}
+.bl-priority.bp1{background:#4A2E00;color:#FCD89A}
+.bl-priority.bp2{background:var(--surface2);color:var(--text-secondary)}
+.blocker-col-hdr{display:grid;grid-template-columns:64px 1fr 100px 110px 90px 32px;gap:10px;padding:4px 14px;margin-bottom:4px}
+.blocker-col-hdr span{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary)}
+/* UPDATE PREVIEW */
+.update-preview{background:var(--text-primary);border-radius:var(--radius-lg);padding:20px 24px}
+.update-preview-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.update-text{font-size:12px;color:#C8C4C0;line-height:1.9;white-space:pre-wrap;font-family:'DM Mono',monospace}
 @media print{.header,.sidebar,.tab-bar,.btn,.summary-actions,.add-row,.modal-overlay{display:none!important}.shell{grid-template-columns:1fr}.main{padding:20px;max-width:100%}.page,.tab-content{display:block!important}}
 </style>
 </head>
@@ -214,13 +242,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 
 <div class="shell">
 <aside class="sidebar">
-  <!-- CLIENT LIST -->
+  <!-- CLIENT SWITCHER -->
   <div class="sb-section">
-    <div class="sb-label">Clients</div>
-    <div class="client-list" id="client-list">
-      <div class="no-clients-msg" id="no-clients-msg">No clients yet.<br>Click "+ New Client" to start.</div>
+    <div class="sb-label">Active client</div>
+    <div style="padding:0 12px 10px">
+      <div class="client-dropdown-wrap">
+        <select class="client-dropdown" id="client-dropdown" onchange="onClientDropdownChange(this)">
+          <option value="">— Select a client —</option>
+        </select>
+        <span class="dropdown-arrow">▾</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openNewClientModal()">+ New</button>
+        <button class="btn btn-danger btn-sm" id="delete-client-btn" style="flex:1;display:none" onclick="promptDeleteActive()">Delete</button>
+      </div>
+      <div id="no-clients-msg" style="font-size:11px;color:var(--text-tertiary);text-align:center;padding:8px 0;display:none">No clients yet. Click "+ New" to start.</div>
     </div>
-    <div style="padding:10px 8px 0"><button class="btn btn-ghost btn-sm" style="width:100%" onclick="openNewClientModal()">+ New Client</button></div>
   </div>
 
   <!-- NAV -->
@@ -230,6 +267,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     <div class="nav-item" onclick="showPage('workspace',this)"><span class="nav-dot"></span>Workspace Audit</div>
     <div class="nav-item" onclick="showPage('checklist',this)"><span class="nav-dot warn"></span>Intake Checklist</div>
     <div class="nav-item" onclick="showPage('risk',this)"><span class="nav-dot risk"></span>Risk Assessment</div>
+    <div class="nav-item" onclick="showPage('tracker',this)"><span class="nav-dot warn"></span>Project Tracker</div>
     <div class="nav-item" onclick="showPage('summary',this)"><span class="nav-dot"></span>Client Summary</div>
   </div>
 
@@ -243,7 +281,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     </div>
   </div>
 
-  <div class="sb-footer">WM Internal Tool<br>v2.0 — Auto-saves locally<br><span id="today-date"></span></div>
+  <div class="sb-footer">WM Internal Tool<br>v3.0 — Auto-saves locally<br><span id="today-date"></span></div>
 </aside>
 
 <main class="main">
@@ -576,6 +614,124 @@ WHAT'S COMING NEXT
     </div>
   </div>
 
+  <!-- PROJECT TRACKER -->
+  <div class="page" id="page-tracker">
+
+    <!-- PHASES -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Project phases</div>
+        <button class="btn btn-ghost btn-sm" onclick="addPhase()">+ Add phase</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">Track each milestone. Click the status pill to cycle through states.</p>
+      <div class="phase-col-hdr">
+        <span></span><span>Phase / Milestone</span><span>Status</span><span>Owner</span><span>Due date</span><span></span>
+      </div>
+      <div class="phase-board" id="phase-board">
+        <div class="phase-row ph-active">
+          <span class="phase-handle">⠿</span>
+          <input class="phase-name" placeholder="Phase name" value="Week 1 — Workspace audit" oninput="autoSave()">
+          <select class="phase-status st-active" onchange="phaseStatusChange(this);autoSave()">
+            <option value="todo">Not started</option>
+            <option value="active" selected>In progress</option>
+            <option value="done">Done</option>
+            <option value="blocked">Blocked</option>
+          </select>
+          <input class="phase-input" placeholder="Owner" value="WM" oninput="autoSave()">
+          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
+          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
+        </div>
+        <div class="phase-row">
+          <span class="phase-handle">⠿</span>
+          <input class="phase-name" placeholder="Phase name" value="Week 2 — Data cleanup plan" oninput="autoSave()">
+          <select class="phase-status st-todo" onchange="phaseStatusChange(this);autoSave()">
+            <option value="todo" selected>Not started</option>
+            <option value="active">In progress</option>
+            <option value="done">Done</option>
+            <option value="blocked">Blocked</option>
+          </select>
+          <input class="phase-input" placeholder="Owner" value="WM" oninput="autoSave()">
+          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
+          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
+        </div>
+        <div class="phase-row">
+          <span class="phase-handle">⠿</span>
+          <input class="phase-name" placeholder="Phase name" value="Week 3 — Client sign-offs" oninput="autoSave()">
+          <select class="phase-status st-todo" onchange="phaseStatusChange(this);autoSave()">
+            <option value="todo" selected>Not started</option>
+            <option value="active">In progress</option>
+            <option value="done">Done</option>
+            <option value="blocked">Blocked</option>
+          </select>
+          <input class="phase-input" placeholder="Owner" value="Client + WM" oninput="autoSave()">
+          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
+          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
+        </div>
+        <div class="phase-row">
+          <span class="phase-handle">⠿</span>
+          <input class="phase-name" placeholder="Phase name" value="Week 4 — Migration execution" oninput="autoSave()">
+          <select class="phase-status st-todo" onchange="phaseStatusChange(this);autoSave()">
+            <option value="todo" selected>Not started</option>
+            <option value="active">In progress</option>
+            <option value="done">Done</option>
+            <option value="blocked">Blocked</option>
+          </select>
+          <input class="phase-input" placeholder="Owner" value="WM" oninput="autoSave()">
+          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
+          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCKERS -->
+    <div class="section" style="margin-top:28px">
+      <div class="section-header">
+        <div class="section-title">Open blockers</div>
+        <button class="btn btn-ghost btn-sm" onclick="addBlockerCard()">+ Add blocker</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">P0 = must resolve before work can continue. P1 = high priority. P2 = monitor. Click status to mark resolved.</p>
+      <div class="blocker-col-hdr">
+        <span>Priority</span><span>Blocker description</span><span>Owner</span><span>Raised by</span><span>Status</span><span></span>
+      </div>
+      <div class="blocker-board" id="blocker-board">
+        <div class="blocker-card bp0">
+          <select class="bl-priority bp0" onchange="blockerPriorityChange(this);autoSave()">
+            <option value="p0" selected>P0 — Critical</option>
+            <option value="p1">P1 — High</option>
+            <option value="p2">P2 — Monitor</option>
+          </select>
+          <input class="phase-input" style="font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-primary)" placeholder="Describe the blocker" oninput="autoSave()">
+          <input class="phase-input" placeholder="Owner" oninput="autoSave()">
+          <input class="phase-input" placeholder="Raised by" oninput="autoSave()">
+          <select class="phase-status st-blocked" onchange="blockerStatusChange(this);autoSave()">
+            <option value="open">Open</option>
+            <option value="inprog">In progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <button class="phase-del" onclick="this.closest('.blocker-card').remove();autoSave()">×</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEKLY UPDATE GENERATOR -->
+    <div class="section" style="margin-top:28px">
+      <div class="section-header">
+        <div class="section-title">Weekly update generator</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="generateUpdate()">↺ Regenerate</button>
+          <button class="btn btn-primary btn-sm" onclick="copyUpdate()">Copy to clipboard</button>
+        </div>
+      </div>
+      <div class="update-preview">
+        <div class="update-preview-label">
+          <span>Auto-generated from phases + blockers above</span>
+        </div>
+        <div class="update-text" id="update-text">Click "Regenerate" to generate the weekly update email from your current phases and blockers.</div>
+      </div>
+    </div>
+
+  </div><!-- /page-tracker -->
+
   </div><!-- /dashboard -->
 </main>
 </div>
@@ -702,6 +858,15 @@ function capture() {
   d.riskNotes  = document.querySelector('#page-risk .notes-body')?.innerHTML||'';
   d.summaryText= document.getElementById('summary-text').innerHTML;
   d.oq         = tblCapture('oq-table', 1);
+  // tracker
+  d.phases = [...document.querySelectorAll('#phase-board .phase-row')].map(r=>{
+    const inputs=[...r.querySelectorAll('input')]; const sel=r.querySelector('select');
+    return {name:inputs[0]?.value||'',status:sel?.value||'todo',owner:inputs[1]?.value||'',due:inputs[2]?.value||''};
+  });
+  d.blockerCards = [...document.querySelectorAll('#blocker-board .blocker-card')].map(c=>{
+    const inputs=[...c.querySelectorAll('input')]; const sels=[...c.querySelectorAll('select')];
+    return {priority:sels[0]?.value||'p2',desc:inputs[0]?.value||'',owner:inputs[1]?.value||'',raisedBy:inputs[2]?.value||'',status:sels[1]?.value||'open'};
+  });
   return d;
 }
 
@@ -749,6 +914,15 @@ function restore(d) {
   const rn=document.querySelector('#page-risk .notes-body'); if(rn&&d.riskNotes!==undefined)rn.innerHTML=d.riskNotes;
   if(d.summaryText!==undefined) document.getElementById('summary-text').innerHTML=d.summaryText;
   if(d.oq) tblRestore('oq-table',d.oq,1);
+  // tracker restore
+  if(d.phases) {
+    const board=document.getElementById('phase-board'); board.innerHTML='';
+    d.phases.forEach(p=>board.appendChild(makePhaseRow(p)));
+  }
+  if(d.blockerCards) {
+    const board=document.getElementById('blocker-board'); board.innerHTML='';
+    d.blockerCards.forEach(b=>board.appendChild(makeBlockerCard(b)));
+  }
   updateProgress();
 }
 
@@ -819,11 +993,11 @@ function loadClient(id){
   renderClientList(); updateProgress();
 }
 
-function deleteClient(id,e){
-  e.stopPropagation();
-  const c=clients[id]; if(!c)return;
+function promptDeleteActive(){
+  if(!activeId)return;
+  const c=clients[activeId];
   document.getElementById('confirm-sub').textContent=`This will permanently delete all data for "${c.name}". Cannot be undone.`;
-  document.getElementById('confirm-del-btn').onclick=()=>confirmDelete(id);
+  document.getElementById('confirm-del-btn').onclick=()=>confirmDelete(activeId);
   document.getElementById('confirm-modal').classList.add('open');
 }
 
@@ -843,21 +1017,36 @@ function confirmDelete(id){
 }
 
 function renderClientList(){
-  const list=document.getElementById('client-list'), msg=document.getElementById('no-clients-msg');
-  list.querySelectorAll('.client-row').forEach(r=>r.remove());
-  const ids=Object.keys(clients).sort((a,b)=>(clients[b].createdAt||0)-(clients[a].createdAt||0));
-  if(!ids.length){msg.style.display='block';return;}
+  const dd = document.getElementById('client-dropdown');
+  const msg = document.getElementById('no-clients-msg');
+  const delBtn = document.getElementById('delete-client-btn');
+  // save scroll
+  const ids = Object.keys(clients).sort((a,b)=>(clients[b].createdAt||0)-(clients[a].createdAt||0));
+  // rebuild options
+  while(dd.options.length > 1) dd.remove(1);
+  if(!ids.length){
+    msg.style.display='block';
+    dd.style.display='none';
+    delBtn.style.display='none';
+    return;
+  }
   msg.style.display='none';
+  dd.style.display='block';
   ids.forEach(id=>{
-    const c=clients[id], risk=c.risk||'none';
-    const bc={high:'crb-high',med:'crb-med',low:'crb-low',none:'crb-none'}[risk]||'crb-none';
-    const bt={high:'HIGH',med:'MED',low:'LOW',none:'—'}[risk]||'—';
-    const row=document.createElement('div');
-    row.className='client-row'+(id===activeId?' active':'');
-    row.onclick=()=>loadClient(id);
-    row.innerHTML=`<div class="cr-info"><div class="cr-name">${c.name}</div><div class="cr-sub">${c.esp||c.industry||c.intakeDate||'—'}</div></div><span class="cr-badge ${bc}">${bt}</span><button class="cr-del" onclick="deleteClient('${id}',event)" title="Delete">×</button>`;
-    list.appendChild(row);
+    const c=clients[id];
+    const risk={high:'▲ HIGH',med:'◆ MED',low:'▼ LOW',none:''}[c.risk||'none']||'';
+    const opt=document.createElement('option');
+    opt.value=id;
+    opt.textContent=`${c.name}${risk?' — '+risk:''}`;
+    if(id===activeId) opt.selected=true;
+    dd.appendChild(opt);
   });
+  delBtn.style.display = activeId ? 'block' : 'none';
+}
+
+function onClientDropdownChange(sel){
+  const id = sel.value;
+  if(id) loadClient(id);
 }
 
 // ── RESET ──
@@ -877,6 +1066,12 @@ function resetDash(){
   document.getElementById('hero-risk-badge').textContent='MED RISK';
   document.querySelectorAll('#page-workspace .tab').forEach((t,i)=>t.classList.toggle('active',i===0));
   document.querySelectorAll('#page-workspace .tab-content').forEach((c,i)=>c.classList.toggle('active',i===0));
+  // reset tracker
+  const pb = document.getElementById('phase-board'); pb.innerHTML='';
+  [{name:'Week 1 — Workspace audit',status:'todo'},{name:'Week 2 — Data cleanup plan',status:'todo'},{name:'Week 3 — Client sign-offs',status:'todo'},{name:'Week 4 — Migration execution',status:'todo'}].forEach(p=>pb.appendChild(makePhaseRow(p)));
+  const bb = document.getElementById('blocker-board'); bb.innerHTML='';
+  bb.appendChild(makeBlockerCard({priority:'p0',status:'open'}));
+  document.getElementById('update-text').textContent='Click "Regenerate" to generate the weekly update email from your current phases and blockers.';
   updateProgress();
 }
 
@@ -978,6 +1173,133 @@ function addBlocker(){
   document.getElementById('blockers-list').appendChild(el); el.querySelector('.check-title').focus(); autoSave();
 }
 function addOpenQuestion(){const r=document.getElementById('oq-table').insertRow();r.innerHTML=`<td><input class="til" placeholder="What open question needs an answer?" oninput="autoSave()"></td><td><input class="ti" placeholder="Owner — by when" oninput="autoSave()"></td>`;}
+
+// ── PROJECT TRACKER ──
+function makePhaseRow(p={}) {
+  const stMap = {todo:'st-todo',active:'st-active',done:'st-done',blocked:'st-blocked'};
+  const rowCls = {todo:'',active:'ph-active',done:'ph-done',blocked:'ph-blocked'}[p.status||'todo']||'';
+  const el = document.createElement('div');
+  el.className = 'phase-row '+ rowCls;
+  el.innerHTML = `
+    <span class="phase-handle">⠿</span>
+    <input class="phase-name" placeholder="Phase name" value="${p.name||''}" oninput="autoSave()">
+    <select class="phase-status ${stMap[p.status||'todo']||'st-todo'}" onchange="phaseStatusChange(this);autoSave()">
+      <option value="todo"${p.status==='todo'?' selected':''}>Not started</option>
+      <option value="active"${p.status==='active'?' selected':''}>In progress</option>
+      <option value="done"${p.status==='done'?' selected':''}>Done</option>
+      <option value="blocked"${p.status==='blocked'?' selected':''}>Blocked</option>
+    </select>
+    <input class="phase-input" placeholder="Owner" value="${p.owner||''}" oninput="autoSave()">
+    <input class="phase-input" placeholder="Due date" value="${p.due||''}" oninput="autoSave()">
+    <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>`;
+  return el;
+}
+
+function addPhase() {
+  document.getElementById('phase-board').appendChild(makePhaseRow({status:'todo'}));
+  autoSave();
+}
+
+function phaseStatusChange(sel) {
+  const row = sel.closest('.phase-row');
+  row.classList.remove('ph-active','ph-done','ph-blocked');
+  const clsMap = {active:'ph-active',done:'ph-done',blocked:'ph-blocked'};
+  if(clsMap[sel.value]) row.classList.add(clsMap[sel.value]);
+  sel.className = 'phase-status '+({todo:'st-todo',active:'st-active',done:'st-done',blocked:'st-blocked'}[sel.value]||'st-todo');
+}
+
+function makeBlockerCard(b={}) {
+  const priCls = {p0:'bp0',p1:'bp1',p2:'bp2'}[b.priority||'p2']||'bp2';
+  const stCls  = {open:'st-blocked',inprog:'st-warn',resolved:'st-done'}[b.status||'open']||'st-blocked';
+  const stOpts = ['open','inprog','resolved'];
+  const stLabels = {open:'Open',inprog:'In progress',resolved:'Resolved'};
+  const priOpts = ['p0','p1','p2'];
+  const priLabels = {'p0':'P0 — Critical','p1':'P1 — High','p2':'P2 — Monitor'};
+  const card = document.createElement('div');
+  card.className = `blocker-card ${priCls}${b.status==='resolved'?' bc-resolved':''}`;
+  card.innerHTML = `
+    <select class="bl-priority ${priCls}" onchange="blockerPriorityChange(this);autoSave()">
+      ${priOpts.map(v=>`<option value="${v}"${b.priority===v?' selected':''}>${priLabels[v]}</option>`).join('')}
+    </select>
+    <input class="phase-input" style="font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-primary)" placeholder="Describe the blocker" value="${b.desc||''}" oninput="autoSave()">
+    <input class="phase-input" placeholder="Owner" value="${b.owner||''}" oninput="autoSave()">
+    <input class="phase-input" placeholder="Raised by" value="${b.raisedBy||''}" oninput="autoSave()">
+    <select class="phase-status ${stCls}" onchange="blockerStatusChange(this);autoSave()">
+      ${stOpts.map(v=>`<option value="${v}"${b.status===v?' selected':''}>${stLabels[v]}</option>`).join('')}
+    </select>
+    <button class="phase-del" onclick="this.closest('.blocker-card').remove();autoSave()">×</button>`;
+  return card;
+}
+
+function addBlockerCard() {
+  document.getElementById('blocker-board').appendChild(makeBlockerCard({priority:'p1',status:'open'}));
+  autoSave();
+}
+
+function blockerPriorityChange(sel) {
+  const card = sel.closest('.blocker-card');
+  card.classList.remove('bp0','bp1','bp2');
+  card.classList.add(sel.value);
+  sel.className = 'bl-priority '+sel.value;
+}
+
+function blockerStatusChange(sel) {
+  const card = sel.closest('.blocker-card');
+  card.classList.toggle('bc-resolved', sel.value==='resolved');
+  const stCls = {open:'st-blocked',inprog:'st-warn',resolved:'st-done'};
+  sel.className = 'phase-status '+(stCls[sel.value]||'st-blocked');
+}
+
+function generateUpdate() {
+  const name = activeId ? clients[activeId].name : 'Client';
+  const date  = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  // phases
+  const phRows = [...document.querySelectorAll('#phase-board .phase-row')];
+  const phDone    = phRows.filter(r=>r.classList.contains('ph-done')).map(r=>`✓ ${r.querySelector('.phase-name').value}`).join('\n');
+  const phActive  = phRows.filter(r=>r.classList.contains('ph-active')).map(r=>{
+    const due = r.querySelectorAll('input')[2].value;
+    return `→ ${r.querySelector('.phase-name').value}${due?' (due '+due+')':''}`;
+  }).join('\n');
+  const phBlocked = phRows.filter(r=>r.classList.contains('ph-blocked')).map(r=>`🔴 ${r.querySelector('.phase-name').value}`).join('\n');
+  const phTodo    = phRows.filter(r=>!r.classList.contains('ph-done')&&!r.classList.contains('ph-active')&&!r.classList.contains('ph-blocked')).map(r=>`○ ${r.querySelector('.phase-name').value}`).join('\n');
+
+  // blockers
+  const bCards = [...document.querySelectorAll('#blocker-board .blocker-card')].filter(c=>!c.classList.contains('bc-resolved'));
+  const bLines = bCards.map(c=>{
+    const pri = c.querySelector('.bl-priority').value.toUpperCase();
+    const desc = c.querySelectorAll('input')[0].value||'Unnamed blocker';
+    const owner = c.querySelectorAll('input')[1].value;
+    return `${pri}: ${desc}${owner?' — Owner: '+owner:''}`;
+  }).join('\n');
+
+  const txt = [
+    `${name} × WM — Weekly Status Update`,
+    date,
+    '',
+    '── PHASES ─────────────────────────',
+    phDone    ? 'COMPLETED\n'+phDone    : '',
+    phActive  ? 'IN PROGRESS\n'+phActive  : '',
+    phBlocked ? 'BLOCKED\n'+phBlocked   : '',
+    phTodo    ? 'UPCOMING\n'+phTodo     : '',
+    '',
+    '── OPEN BLOCKERS ───────────────────',
+    bLines || 'No open blockers 🎉',
+    '',
+    '── NEXT STEPS ──────────────────────',
+    phActive ? phActive.replace(/^→ /gm,'• ') : 'See phases above.',
+  ].filter(x=>x!==null&&x!=='').join('\n');
+
+  document.getElementById('update-text').textContent = txt;
+}
+
+function copyUpdate() {
+  const txt = document.getElementById('update-text').textContent;
+  if(txt.includes('Click "Regenerate"')) { generateUpdate(); }
+  setTimeout(()=>{
+    navigator.clipboard.writeText(document.getElementById('update-text').textContent).then(()=>toast('Weekly update copied'));
+  }, 50);
+}
 
 // ── CHIPS ──
 function toggleChip(el){
