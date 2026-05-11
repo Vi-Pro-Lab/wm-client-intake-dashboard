@@ -3,19 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WM — Client Intake & Audit Dashboard</title>
-<meta name="description" content="A structured intake and audit dashboard for email marketing and CRM agency projects.">
+<title>WM — Client Tools</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F5F3EE;--surface:#fff;--surface2:#EDEBE6;--border:#D8D4CC;--border-strong:#B8B2A8;--text-primary:#1A1916;--text-secondary:#6B6760;--text-tertiary:#A09C97;--green:#1A5C3A;--green-bg:#E8F4EE;--green-bd:#B8DECA;--amber:#7A4A00;--amber-bg:#FDF3E0;--amber-bd:#E8C97A;--red:#8B1A1A;--red-bg:#FBEAEA;--red-bd:#DCAAAA;--orange:#E85D24;--radius:6px;--radius-lg:10px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);font-size:14px;line-height:1.6;min-height:100vh}
-.header{background:var(--text-primary);color:#F5F3EE;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
-.header-left{display:flex;align-items:center;gap:12px}
-.wm-logo{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.06em;color:var(--orange)}
-.hdiv{width:1px;height:18px;background:#3A3835}
-.header-title{font-size:12px;color:#706C68;font-weight:300}
-.header-actions{display:flex;gap:8px;align-items:center}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--text-primary);height:52px;display:flex;align-items:center;padding:0 24px;gap:0;position:sticky;top:0;z-index:200}
+.wm-logo{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--orange);margin-right:20px;flex-shrink:0}
+.tool-tabs{display:flex;align-items:stretch;height:100%;gap:0;flex:1}
+.tool-tab{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:#706C68;padding:0 20px;cursor:pointer;display:flex;align-items:center;gap:7px;border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap}
+.tool-tab:hover{color:#C8C4C0;background:rgba(255,255,255,.04)}
+.tool-tab.active{color:#F5F3EE;border-bottom-color:var(--orange);font-weight:500}
+.tool-tab-icon{font-size:14px;opacity:.7}
+.topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.autosave{font-size:10px;color:#706C68;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px}
+.as-dot{width:5px;height:5px;border-radius:50%;background:#5A5652;transition:background .3s;flex-shrink:0}
+.as-dot.saving{background:var(--orange)}
+.as-dot.saved{background:var(--green)}
 .btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:6px 14px;border-radius:var(--radius);cursor:pointer;border:none;transition:all .15s;letter-spacing:.01em;line-height:1}
 .btn-ghost{background:transparent;color:#A09C97;border:1px solid #3A3835}
 .btn-ghost:hover{background:#2A2825;color:#F5F3EE}
@@ -24,8 +31,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .btn-danger{background:transparent;color:#EF4444;border:1px solid #EF4444}
 .btn-danger:hover{background:var(--red-bg)}
 .btn-sm{padding:4px 10px;font-size:11px}
-.shell{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 52px)}
-.sidebar{background:var(--surface);border-right:1px solid var(--border);position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;display:flex;flex-direction:column}
+
+/* ── TOOL VIEWS ── */
+.tool-view{display:none;min-height:calc(100vh - 52px)}
+.tool-view.active{display:flex}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);width:240px;flex-shrink:0;position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;display:flex;flex-direction:column}
 .sb-section{padding:14px 0;border-bottom:1px solid var(--border)}
 .sb-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-tertiary);padding:0 16px 8px}
 .nav-item{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;font-size:13px;color:var(--text-secondary);transition:all .12s;border-left:2px solid transparent;user-select:none}
@@ -35,11 +47,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .nav-dot.done{background:var(--green)}
 .nav-dot.warn{background:#F59E0B}
 .nav-dot.risk{background:#EF4444}
+.sb-footer{margin-top:auto;padding:12px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--text-tertiary);font-family:'DM Mono',monospace;line-height:1.8}
+
 /* CLIENT DROPDOWN */
 .client-dropdown-wrap{position:relative;display:flex;align-items:center}
 .client-dropdown{width:100%;padding:8px 28px 8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-primary);background:var(--surface);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .12s}
 .client-dropdown:focus{border-color:var(--orange)}
 .dropdown-arrow{position:absolute;right:9px;font-size:11px;color:var(--text-tertiary);pointer-events:none}
+
 /* PROGRESS */
 .sb-progress{margin:10px 12px 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px}
 .progress-label{font-size:10px;color:var(--text-tertiary);margin-bottom:7px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
@@ -47,19 +62,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .progress-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease}
 .progress-pct{font-family:'DM Mono',monospace;font-size:20px;font-weight:500}
 .progress-sub{font-size:11px;color:var(--text-tertiary);margin-top:2px}
-.sb-footer{margin-top:auto;padding:12px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--text-tertiary);font-family:'DM Mono',monospace;line-height:1.8}
-/* AUTOSAVE */
-.autosave{font-size:10px;color:#706C68;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px}
-.as-dot{width:5px;height:5px;border-radius:50%;background:#A09C97;transition:background .3s;flex-shrink:0}
-.as-dot.saving{background:var(--orange)}
-.as-dot.saved{background:var(--green)}
-/* MAIN */
-.main{padding:28px 36px;max-width:960px}
+
+/* ── MAIN ── */
+.main{flex:1;padding:28px 36px;max-width:960px;overflow-y:auto}
+.main-full{flex:1;padding:28px 36px;overflow-y:auto}
+
 /* EMPTY */
 .empty-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:14px}
 .empty-icon{font-size:40px;opacity:.25}
 .empty-title{font-size:18px;font-weight:600}
 .empty-sub{font-size:14px;color:var(--text-secondary);max-width:300px;line-height:1.6}
+
 /* HERO */
 .client-hero{background:var(--text-primary);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
 .client-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
@@ -76,6 +89,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .risk-med{background:#4A2E00;color:#FCD89A;border:1px solid #6B4400}
 .risk-low{background:#0F3B24;color:#A7D9BC;border:1px solid #1A5C3A}
 .intake-date{font-size:11px;color:#6B6760;font-family:'DM Mono',monospace}
+
 /* STATS */
 .stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px}
@@ -84,12 +98,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .stat-val:focus{border-bottom-color:var(--orange)}
 .stat-sub{font-size:11px;color:var(--text-tertiary);margin-top:5px;background:none;border:none;border-bottom:1px dashed transparent;font-family:'DM Sans',sans-serif;width:100%;outline:none;padding:0}
 .stat-sub:focus{border-bottom-color:var(--border)}
+
 /* SECTION */
 .section{margin-bottom:24px}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .section-title{font-size:12px;font-weight:500;font-family:'DM Mono',monospace;letter-spacing:.05em;color:var(--text-primary);display:flex;align-items:center;gap:8px;text-transform:uppercase}
 .section-title::before{content:'';display:block;width:3px;height:13px;background:var(--orange);border-radius:2px;flex-shrink:0}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
 /* DATA CARD */
 .data-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 .data-card-header{padding:10px 15px;border-bottom:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary);font-family:'DM Mono',monospace;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between}
@@ -101,12 +117,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .data-table tr:hover td{background:var(--bg)}
 .ti{border:none;outline:none;font-size:11px;text-align:right;background:transparent;font-family:'DM Mono',monospace;width:100%}
 .til{border:none;outline:none;font-size:12px;width:100%;color:var(--text-secondary);background:transparent;font-family:'DM Sans',sans-serif}
+
 /* NOTES */
 .notes-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 .notes-header{padding:10px 15px;border-bottom:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text-secondary);font-family:'DM Mono',monospace;letter-spacing:.04em}
 .notes-body{padding:13px 15px;font-size:13px;color:var(--text-secondary);line-height:1.7;outline:none;min-height:72px;transition:background .12s}
 .notes-body:focus{background:#FAFAF8}
 .notes-body:empty::before{content:attr(data-placeholder);color:var(--text-tertiary);pointer-events:none}
+
 /* CHECKLIST */
 .checklist{display:flex;flex-direction:column;gap:2px}
 .check-item{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:border-color .12s,background .12s;user-select:none}
@@ -130,6 +148,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .status-block{background:var(--red-bg);color:var(--red)}
 .status-pend{background:var(--surface2);color:var(--text-secondary)}
 .check-cat{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text-tertiary);padding:12px 2px 5px}
+
 /* RISK */
 .risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .risk-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 14px}
@@ -138,21 +157,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .risk-selector.high{color:#EF4444}
 .risk-selector.med{color:#F59E0B}
 .risk-selector.low{color:#22C55E}
+
 /* TABS */
 .tab-bar{display:flex;margin-bottom:18px;border-bottom:1px solid var(--border)}
 .tab{font-size:12px;font-weight:400;padding:9px 16px;cursor:pointer;color:var(--text-tertiary);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;user-select:none}
 .tab:hover{color:var(--text-primary)}
 .tab.active{color:var(--text-primary);border-bottom-color:var(--orange);font-weight:500}
+
 /* PAGES */
 .page{display:none}
 .page.active{display:block}
 .tab-content{display:none}
 .tab-content.active{display:block}
+
 /* CHIPS */
 .chip-row{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:11px;padding:4px 10px;border-radius:100px;border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;transition:all .12s;font-family:'DM Mono',monospace;user-select:none}
 .chip.selected{background:var(--text-primary);color:#F5F3EE;border-color:var(--text-primary)}
 .chip:hover:not(.selected){border-color:var(--border-strong);background:var(--surface2)}
+
 /* SUMMARY */
 .summary-box{background:var(--text-primary);border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:20px}
 .summary-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
@@ -160,27 +183,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .summary-text:focus{color:#D8D4CC}
 .summary-text:empty::before{content:attr(data-placeholder);color:#5A5652}
 .summary-actions{display:flex;gap:8px;margin-top:16px}
+
 /* ADD ROW */
 .add-row{display:flex;gap:8px;margin-top:8px}
 .add-input{flex:1;padding:8px 11px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-primary);background:var(--surface);outline:none;transition:border-color .12s}
 .add-input:focus{border-color:var(--orange)}
 .add-input::placeholder{color:var(--text-tertiary)}
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border-radius:var(--radius-lg);padding:24px 28px;width:480px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.confirm-modal{background:var(--surface);border-radius:var(--radius-lg);padding:24px 28px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-title{font-size:15px;font-weight:600;margin-bottom:4px}
-.modal-sub{font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6}
-.field-group{margin-bottom:14px}
-.field-label{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:5px;display:block}
-.field-input,.field-select{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-primary);background:var(--surface);outline:none;transition:border-color .12s;appearance:none;-webkit-appearance:none}
-.field-input:focus,.field-select:focus{border-color:var(--orange)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
-/* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--text-primary);color:#F5F3EE;font-size:12px;padding:10px 18px;border-radius:var(--radius);opacity:0;transition:opacity .2s;pointer-events:none;font-family:'DM Mono',monospace;z-index:999}
-.toast.show{opacity:1}
+
 /* PROJECT TRACKER */
 .phase-board{display:flex;flex-direction:column;gap:6px}
 .phase-row{display:grid;grid-template-columns:28px 1fr 110px 120px 90px 32px;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .12s}
@@ -196,6 +205,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .phase-status.st-active{background:var(--amber-bg);color:var(--amber)}
 .phase-status.st-done{background:var(--green-bg);color:var(--green)}
 .phase-status.st-blocked{background:var(--red-bg);color:var(--red)}
+.phase-status.st-warn{background:var(--amber-bg);color:var(--amber)}
 .phase-input{font-size:11px;background:none;border:none;outline:none;font-family:'DM Mono',monospace;color:var(--text-secondary);width:100%;border-bottom:1px dashed transparent}
 .phase-input:focus{border-bottom-color:var(--border)}
 .phase-del{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--text-tertiary);cursor:pointer;opacity:0;transition:opacity .12s;font-size:16px;border:none;flex-shrink:0}
@@ -203,7 +213,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .phase-del:hover{background:var(--red-bg);color:var(--red)}
 .phase-col-hdr{display:grid;grid-template-columns:28px 1fr 110px 120px 90px 32px;gap:10px;padding:4px 14px;margin-bottom:4px}
 .phase-col-hdr span{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary)}
-/* BLOCKER CARDS */
 .blocker-board{display:flex;flex-direction:column;gap:6px}
 .blocker-card{display:grid;grid-template-columns:64px 1fr 100px 110px 90px 32px;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .12s}
 .blocker-card:hover{border-color:var(--border-strong)}
@@ -217,371 +226,411 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .bl-priority.bp2{background:var(--surface2);color:var(--text-secondary)}
 .blocker-col-hdr{display:grid;grid-template-columns:64px 1fr 100px 110px 90px 32px;gap:10px;padding:4px 14px;margin-bottom:4px}
 .blocker-col-hdr span{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary)}
-/* UPDATE PREVIEW */
 .update-preview{background:var(--text-primary);border-radius:var(--radius-lg);padding:20px 24px}
-.update-preview-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.update-preview-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
 .update-text{font-size:12px;color:#C8C4C0;line-height:1.9;white-space:pre-wrap;font-family:'DM Mono',monospace}
-@media print{.header,.sidebar,.tab-bar,.btn,.summary-actions,.add-row,.modal-overlay{display:none!important}.shell{grid-template-columns:1fr}.main{padding:20px;max-width:100%}.page,.tab-content{display:block!important}}
+
+/* SCORECARD */
+.sc-type-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.sc-type-btn{font-size:12px;font-family:'DM Mono',monospace;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);cursor:pointer;transition:all .15s;user-select:none}
+.sc-type-btn:hover{border-color:var(--border-strong);color:var(--text-primary)}
+.sc-type-btn.active{background:var(--text-primary);color:#F5F3EE;border-color:var(--text-primary)}
+.sc-factor-board{display:flex;flex-direction:column;gap:5px}
+.sc-factor-hdr{display:grid;grid-template-columns:1fr 120px 80px 28px;gap:10px;padding:4px 14px}
+.sc-factor-hdr span{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary)}
+.sc-factor{display:grid;grid-template-columns:1fr 120px 80px 28px;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .12s}
+.sc-factor:hover{border-color:var(--border-strong)}
+.sc-factor.sf-high{background:var(--red-bg);border-color:var(--red-bd)}
+.sc-factor.sf-med{background:var(--amber-bg);border-color:var(--amber-bd)}
+.sc-factor.sf-low{background:var(--green-bg);border-color:var(--green-bd)}
+.sc-factor-name{font-size:13px;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;color:var(--text-primary);width:100%;border-bottom:1px dashed transparent}
+.sc-factor-name:focus{border-bottom-color:var(--border-strong)}
+.sc-factor-note{font-size:11px;background:none;border:none;outline:none;font-family:'DM Mono',monospace;color:var(--text-secondary);width:100%}
+.sc-factor-note::placeholder{color:var(--text-tertiary)}
+.sc-rating{font-size:11px;font-family:'DM Mono',monospace;font-weight:500;padding:4px 8px;border-radius:100px;border:none;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;text-align:center;width:100%}
+.sc-rating.sr-high{background:var(--red-bg);color:var(--red)}
+.sc-rating.sr-med{background:var(--amber-bg);color:var(--amber)}
+.sc-rating.sr-low{background:var(--green-bg);color:var(--green)}
+.sc-rating.sr-none{background:var(--surface2);color:var(--text-tertiary)}
+.sc-result{border-radius:var(--radius-lg);padding:22px 26px;border:2px solid var(--border)}
+.sc-result.tier-green{background:var(--green-bg);border-color:var(--green-bd)}
+.sc-result.tier-amber{background:var(--amber-bg);border-color:var(--amber-bd)}
+.sc-result.tier-red{background:var(--red-bg);border-color:var(--red-bd)}
+.sc-result-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;color:var(--text-tertiary)}
+.sc-result-tier{font-size:28px;font-weight:700;margin-bottom:4px}
+.sc-result-tier.tier-green{color:var(--green)}
+.sc-result-tier.tier-amber{color:var(--amber)}
+.sc-result-tier.tier-red{color:var(--red)}
+.sc-result-sub{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px}
+.sc-recs{display:flex;flex-direction:column;gap:6px}
+.sc-rec{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text-secondary);line-height:1.5}
+.sc-rec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.sc-score-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin:10px 0}
+.sc-score-fill{height:100%;border-radius:3px;transition:width .5s ease,background .3s}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);padding:24px 28px;width:480px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.confirm-modal{background:var(--surface);border-radius:var(--radius-lg);padding:24px 28px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6}
+.field-group{margin-bottom:14px}
+.field-label{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:5px;display:block}
+.field-input,.field-select{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-primary);background:var(--surface);outline:none;transition:border-color .12s;appearance:none;-webkit-appearance:none}
+.field-input:focus,.field-select:focus{border-color:var(--orange)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--text-primary);color:#F5F3EE;font-size:12px;padding:10px 18px;border-radius:var(--radius);opacity:0;transition:opacity .2s;pointer-events:none;font-family:'DM Mono',monospace;z-index:999}
+.toast.show{opacity:1}
+
+@media print{.topbar,.sidebar,.tab-bar,.btn,.summary-actions,.add-row,.modal-overlay{display:none!important}.tool-view{display:block!important}.main,.main-full{padding:20px}.page,.tab-content{display:block!important}}
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-left">
-    <span class="wm-logo">WM</span>
-    <div class="hdiv"></div>
-    <span class="header-title">Client Intake & Audit Dashboard</span>
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="wm-logo">WM</span>
+  <div class="tool-tabs">
+    <div class="tool-tab active" onclick="switchTool('intake',this)"><span class="tool-tab-icon">📋</span>Intake & Audit</div>
+    <div class="tool-tab" onclick="switchTool('tracker',this)"><span class="tool-tab-icon">📌</span>Project Tracker</div>
+    <div class="tool-tab" onclick="switchTool('scorecard',this)"><span class="tool-tab-icon">⚖️</span>Risk Scorecard</div>
   </div>
-  <div class="header-actions">
+  <div class="topbar-right">
     <div class="autosave"><div class="as-dot" id="as-dot"></div><span id="as-txt">All changes saved</span></div>
     <button class="btn btn-ghost btn-sm" onclick="openNewClientModal()">+ New Client</button>
-    <button class="btn btn-ghost btn-sm" onclick="copyWeeklyUpdate()">Copy Weekly Update</button>
     <button class="btn btn-primary btn-sm" onclick="window.print()">Export PDF</button>
   </div>
-</header>
+</div>
 
-<div class="shell">
-<aside class="sidebar">
-  <!-- CLIENT SWITCHER -->
-  <div class="sb-section">
-    <div class="sb-label">Active client</div>
-    <div style="padding:0 12px 10px">
-      <div class="client-dropdown-wrap">
-        <select class="client-dropdown" id="client-dropdown" onchange="onClientDropdownChange(this)">
-          <option value="">— Select a client —</option>
-        </select>
-        <span class="dropdown-arrow">▾</span>
+<!-- ══════════════════════════════════════════ -->
+<!-- TOOL 1 — INTAKE & AUDIT                   -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tool-view active" id="tool-intake">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-label">Active client</div>
+      <div style="padding:0 12px 10px">
+        <div class="client-dropdown-wrap">
+          <select class="client-dropdown" id="client-dropdown" onchange="onClientDropdownChange(this)">
+            <option value="">— Select a client —</option>
+          </select>
+          <span class="dropdown-arrow">▾</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openNewClientModal()">+ New</button>
+          <button class="btn btn-danger btn-sm" id="delete-client-btn" style="flex:1;display:none" onclick="promptDeleteActive()">Delete</button>
+        </div>
+        <div id="no-clients-msg" style="font-size:11px;color:var(--text-tertiary);text-align:center;padding:8px 0;display:none">No clients yet. Click "+ New" to start.</div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:8px">
-        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openNewClientModal()">+ New</button>
-        <button class="btn btn-danger btn-sm" id="delete-client-btn" style="flex:1;display:none" onclick="promptDeleteActive()">Delete</button>
+    </div>
+    <div class="sb-section" id="nav-section" style="display:none">
+      <div class="sb-label">Sections</div>
+      <div class="nav-item active" onclick="showPage('overview',this)"><span class="nav-dot done"></span>Overview</div>
+      <div class="nav-item" onclick="showPage('workspace',this)"><span class="nav-dot"></span>Workspace Audit</div>
+      <div class="nav-item" onclick="showPage('checklist',this)"><span class="nav-dot warn"></span>Intake Checklist</div>
+      <div class="nav-item" onclick="showPage('risk',this)"><span class="nav-dot risk"></span>Risk Assessment</div>
+      <div class="nav-item" onclick="showPage('summary',this)"><span class="nav-dot"></span>Client Summary</div>
+    </div>
+    <div class="sb-section" id="progress-section" style="display:none">
+      <div class="sb-progress">
+        <div class="progress-label">Checklist progress</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-pct" id="progress-pct">0%</div>
+        <div class="progress-sub" id="progress-sub">0 of 0 items</div>
       </div>
-      <div id="no-clients-msg" style="font-size:11px;color:var(--text-tertiary);text-align:center;padding:8px 0;display:none">No clients yet. Click "+ New" to start.</div>
     </div>
-  </div>
-
-  <!-- NAV -->
-  <div class="sb-section" id="nav-section" style="display:none">
-    <div class="sb-label">Sections</div>
-    <div class="nav-item active" onclick="showPage('overview',this)"><span class="nav-dot done"></span>Overview</div>
-    <div class="nav-item" onclick="showPage('workspace',this)"><span class="nav-dot"></span>Workspace Audit</div>
-    <div class="nav-item" onclick="showPage('checklist',this)"><span class="nav-dot warn"></span>Intake Checklist</div>
-    <div class="nav-item" onclick="showPage('risk',this)"><span class="nav-dot risk"></span>Risk Assessment</div>
-    <div class="nav-item" onclick="showPage('tracker',this)"><span class="nav-dot warn"></span>Project Tracker</div>
-    <div class="nav-item" onclick="showPage('summary',this)"><span class="nav-dot"></span>Client Summary</div>
-  </div>
-
-  <!-- PROGRESS -->
-  <div class="sb-section" id="progress-section" style="display:none">
-    <div class="sb-progress">
-      <div class="progress-label">Checklist progress</div>
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      <div class="progress-pct" id="progress-pct">0%</div>
-      <div class="progress-sub" id="progress-sub">0 of 0 items</div>
+    <div class="sb-footer">WM Internal Tool<br>v4.0 — Auto-saves locally<br><span id="today-date"></span></div>
+  </aside>
+  <div class="main">
+    <div class="empty-screen" id="empty-screen">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">No client selected</div>
+      <div class="empty-sub">Create a new client or select one from the dropdown. Everything auto-saves in your browser.</div>
+      <button class="btn btn-primary" onclick="openNewClientModal()">+ New Client</button>
     </div>
-  </div>
+    <div id="dashboard" style="display:none">
 
-  <div class="sb-footer">WM Internal Tool<br>v3.0 — Auto-saves locally<br><span id="today-date"></span></div>
-</aside>
-
-<main class="main">
-  <!-- EMPTY STATE -->
-  <div class="empty-screen" id="empty-screen">
-    <div class="empty-icon">📋</div>
-    <div class="empty-title">No client selected</div>
-    <div class="empty-sub">Create a new client intake or select one from the sidebar. All data saves automatically in your browser.</div>
-    <button class="btn btn-primary" onclick="openNewClientModal()">+ New Client</button>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard" style="display:none">
-
-  <!-- OVERVIEW -->
-  <div class="page active" id="page-overview">
-    <div class="client-hero">
-      <div>
-        <div class="client-tag">Active Client — <span id="hero-date"></span></div>
-        <div class="client-name-display" id="hero-name">—</div>
-        <div class="client-sub" id="hero-sub">Industry · Location · Platform</div>
-        <div class="client-meta">
-          <div><div class="cml">ESP Platform</div><input class="cmv" id="meta-esp" placeholder="e.g. Customer.io" oninput="autoSave()"></div>
-          <div><div class="cml">Workspace ID</div><input class="cmv" id="meta-workspace" placeholder="Workspace ID" oninput="autoSave()"></div>
-          <div><div class="cml">WM Lead</div><input class="cmv" id="meta-wmlead" placeholder="WM lead" oninput="autoSave()"></div>
-          <div><div class="cml">Client Contact</div><input class="cmv" id="meta-contact" placeholder="Client contact" oninput="autoSave()"></div>
+      <!-- OVERVIEW -->
+      <div class="page active" id="page-overview">
+        <div class="client-hero">
+          <div>
+            <div class="client-tag">Active Client — <span id="hero-date"></span></div>
+            <div class="client-name-display" id="hero-name">—</div>
+            <div class="client-sub" id="hero-sub">Industry · Location · Platform</div>
+            <div class="client-meta">
+              <div><div class="cml">ESP Platform</div><input class="cmv" id="meta-esp" placeholder="e.g. Customer.io" oninput="autoSave()"></div>
+              <div><div class="cml">Workspace ID</div><input class="cmv" id="meta-workspace" placeholder="Workspace ID" oninput="autoSave()"></div>
+              <div><div class="cml">WM Lead</div><input class="cmv" id="meta-wmlead" placeholder="WM lead" oninput="autoSave()"></div>
+              <div><div class="cml">Client Contact</div><input class="cmv" id="meta-contact" placeholder="Client contact" oninput="autoSave()"></div>
+            </div>
+          </div>
+          <div class="hero-right">
+            <span class="risk-badge risk-med" id="hero-risk-badge" onclick="cycleRisk()" title="Click to change">MED RISK</span>
+            <span class="intake-date" id="hero-intake-date"></span>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-label">Total Profiles</div><input class="stat-val" id="stat-profiles" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-profiles-sub" placeholder="e.g. X active" oninput="autoSave()"></div>
+          <div class="stat-card"><div class="stat-label">Active Campaigns</div><input class="stat-val" id="stat-campaigns" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-campaigns-sub" placeholder="e.g. + X archived" oninput="autoSave()"></div>
+          <div class="stat-card"><div class="stat-label">Attributes</div><input class="stat-val" id="stat-attributes" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-attributes-sub" placeholder="e.g. X in use" oninput="autoSave()"></div>
+          <div class="stat-card"><div class="stat-label">Events Tracked</div><input class="stat-val" id="stat-events" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-events-sub" placeholder="e.g. X in use" oninput="autoSave()"></div>
+          <div class="stat-card"><div class="stat-label">Critical Blockers</div><input class="stat-val" id="stat-blockers" placeholder="0" oninput="autoSave()"><input class="stat-sub" id="stat-blockers-sub" placeholder="e.g. X P0, X P1" oninput="autoSave()"></div>
+        </div>
+        <div class="section">
+          <div class="section-header"><div class="section-title">Project scope</div></div>
+          <div class="notes-box"><div class="notes-header">Why was WM hired? What's the goal?</div><div class="notes-body" id="scope-notes" contenteditable="true" data-placeholder="Describe the project scope..." oninput="autoSave()"></div></div>
+        </div>
+        <div class="two-col">
+          <div class="section">
+            <div class="section-header"><div class="section-title">Key contacts</div></div>
+            <div class="data-card"><div class="data-card-header">Team roster<button class="btn btn-ghost btn-sm" onclick="addContact()">+ Add</button></div>
+            <table class="data-table" id="contacts-table">
+              <tr><td><input class="til" placeholder="Name" oninput="autoSave()"></td><td><input class="ti" placeholder="Role / Org" oninput="autoSave()"></td></tr>
+              <tr><td><input class="til" placeholder="Name" oninput="autoSave()"></td><td><input class="ti" placeholder="Role / Org" oninput="autoSave()"></td></tr>
+              <tr><td><input class="til" placeholder="Name" oninput="autoSave()"></td><td><input class="ti" placeholder="Role / Org" oninput="autoSave()"></td></tr>
+            </table></div>
+          </div>
+          <div class="section">
+            <div class="section-header"><div class="section-title">Initial data flags</div></div>
+            <div class="data-card"><div class="data-card-header">What stood out immediately?<button class="btn btn-ghost btn-sm" onclick="addFlag()">+ Add</button></div>
+            <table class="data-table" id="flags-table">
+              <tr><td><input class="til" placeholder="Issue or observation" oninput="autoSave()"></td><td><select class="ti" style="cursor:pointer" onchange="autoSave()"><option value="high">🔴 High</option><option value="med">🟡 Med</option><option value="low">🟢 Low</option></select></td></tr>
+              <tr><td><input class="til" placeholder="Issue or observation" oninput="autoSave()"></td><td><select class="ti" style="cursor:pointer" onchange="autoSave()"><option value="high">🔴 High</option><option value="med">🟡 Med</option><option value="low">🟢 Low</option></select></td></tr>
+              <tr><td><input class="til" placeholder="Issue or observation" oninput="autoSave()"></td><td><select class="ti" style="cursor:pointer" onchange="autoSave()"><option value="high">🔴 High</option><option value="med">🟡 Med</option><option value="low">🟢 Low</option></select></td></tr>
+            </table></div>
+          </div>
         </div>
       </div>
-      <div class="hero-right">
-        <span class="risk-badge risk-med" id="hero-risk-badge" onclick="cycleRisk()" title="Click to change risk">MED RISK</span>
-        <span class="intake-date" id="hero-intake-date"></span>
-      </div>
-    </div>
 
-    <div class="stat-row">
-      <div class="stat-card"><div class="stat-label">Total Profiles</div><input class="stat-val" id="stat-profiles" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-profiles-sub" placeholder="e.g. X active" oninput="autoSave()"></div>
-      <div class="stat-card"><div class="stat-label">Active Campaigns</div><input class="stat-val" id="stat-campaigns" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-campaigns-sub" placeholder="e.g. + X archived" oninput="autoSave()"></div>
-      <div class="stat-card"><div class="stat-label">Attributes</div><input class="stat-val" id="stat-attributes" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-attributes-sub" placeholder="e.g. X in use" oninput="autoSave()"></div>
-      <div class="stat-card"><div class="stat-label">Events Tracked</div><input class="stat-val" id="stat-events" placeholder="—" oninput="autoSave()"><input class="stat-sub" id="stat-events-sub" placeholder="e.g. X in use" oninput="autoSave()"></div>
-      <div class="stat-card"><div class="stat-label">Critical Blockers</div><input class="stat-val" id="stat-blockers" placeholder="0" oninput="autoSave()"><input class="stat-sub" id="stat-blockers-sub" placeholder="e.g. X P0, X P1" oninput="autoSave()"></div>
-    </div>
-
-    <div class="section">
-      <div class="section-header"><div class="section-title">Project scope</div></div>
-      <div class="notes-box"><div class="notes-header">Why was WM hired? What's the goal?</div><div class="notes-body" id="scope-notes" contenteditable="true" data-placeholder="Describe the project scope and context..." oninput="autoSave()"></div></div>
-    </div>
-
-    <div class="two-col">
-      <div class="section">
-        <div class="section-header"><div class="section-title">Key contacts</div></div>
-        <div class="data-card">
-          <div class="data-card-header">Team roster<button class="btn btn-ghost btn-sm" onclick="addContact()">+ Add</button></div>
-          <table class="data-table" id="contacts-table">
-            <tr><td><input class="til" placeholder="Name" oninput="autoSave()"></td><td><input class="ti" placeholder="Role / Org" oninput="autoSave()"></td></tr>
-            <tr><td><input class="til" placeholder="Name" oninput="autoSave()"></td><td><input class="ti" placeholder="Role / Org" oninput="autoSave()"></td></tr>
-            <tr><td><input class="til" placeholder="Name" oninput="autoSave()"></td><td><input class="ti" placeholder="Role / Org" oninput="autoSave()"></td></tr>
-          </table>
+      <!-- WORKSPACE AUDIT -->
+      <div class="page" id="page-workspace">
+        <div class="section"><div class="section-header"><div class="section-title">ESP Platform</div></div>
+          <div class="chip-row" id="esp-chips">
+            <span class="chip" onclick="toggleChip(this)">Customer.io</span><span class="chip" onclick="toggleChip(this)">Klaviyo</span><span class="chip" onclick="toggleChip(this)">Braze</span><span class="chip" onclick="toggleChip(this)">Iterable</span><span class="chip" onclick="toggleChip(this)">HubSpot</span><span class="chip" onclick="toggleChip(this)">Salesforce</span><span class="chip" onclick="toggleChip(this)">Mailchimp</span><span class="chip" onclick="toggleChip(this)">Omnisend</span><span class="chip" onclick="toggleChip(this)">Constant Contact</span><span class="chip" onclick="toggleChip(this)">Other</span>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchTab(this,'wt-profiles')">Profiles</div>
+          <div class="tab" onclick="switchTab(this,'wt-campaigns')">Campaigns</div>
+          <div class="tab" onclick="switchTab(this,'wt-attributes')">Attributes</div>
+          <div class="tab" onclick="switchTab(this,'wt-events')">Events</div>
+          <div class="tab" onclick="switchTab(this,'wt-sources')">Data Sources</div>
+          <div class="tab" onclick="switchTab(this,'wt-automations')">Automations</div>
+        </div>
+        <div class="tab-content active" id="wt-profiles">
+          <div class="two-col" style="margin-bottom:14px">
+            <div class="data-card"><div class="data-card-header">Profile overview</div><table class="data-table">
+              <tr><td>Total profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Active profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Inactive profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Profiles with email</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Profiles without email</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Estimated billable profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+            </table></div>
+            <div class="data-card"><div class="data-card-header">Identifier patterns</div><table class="data-table">
+              <tr><td>Primary ID type</td><td><input class="ti" placeholder="e.g. email / UUID" oninput="autoSave()"></td></tr>
+              <tr><td>Any prefix patterns?</td><td><input class="ti" placeholder="e.g. dacc-, 0x-" oninput="autoSave()"></td></tr>
+              <tr><td>Duplicate risk</td><td><input class="ti" placeholder="Yes / No / Unknown" oninput="autoSave()"></td></tr>
+              <tr><td>Geography split known?</td><td><input class="ti" placeholder="Yes / No / TBD" oninput="autoSave()"></td></tr>
+              <tr><td>Suppression list exists?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Consent / opt-in tracked?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+            </table></div>
+          </div>
+          <div class="notes-box"><div class="notes-header">Profile audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="Note anything unusual about the profile structure..." oninput="autoSave()"></div></div>
+        </div>
+        <div class="tab-content" id="wt-campaigns">
+          <div class="two-col" style="margin-bottom:14px">
+            <div class="data-card"><div class="data-card-header">Campaign inventory</div><table class="data-table">
+              <tr><td>Total campaigns</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Active / running</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Paused / stopped</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Archived</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Avg open rate</td><td><input class="ti" placeholder="—%" oninput="autoSave()"></td></tr>
+              <tr><td>Avg click rate</td><td><input class="ti" placeholder="—%" oninput="autoSave()"></td></tr>
+            </table></div>
+            <div class="data-card"><div class="data-card-header">Campaign health</div><table class="data-table">
+              <tr><td>Geography tagged?</td><td><input class="ti" placeholder="X of Y tagged" oninput="autoSave()"></td></tr>
+              <tr><td>Trigger type: event-based</td><td><input class="ti" placeholder="Count" oninput="autoSave()"></td></tr>
+              <tr><td>Trigger type: segment-based</td><td><input class="ti" placeholder="Count" oninput="autoSave()"></td></tr>
+              <tr><td>Trigger type: scheduled</td><td><input class="ti" placeholder="Count" oninput="autoSave()"></td></tr>
+              <tr><td>Using deprecated triggers?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Any campaigns to archive?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+            </table></div>
+          </div>
+          <div class="notes-box"><div class="notes-header">Campaign audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="Note top performing campaigns, broken triggers, mis-targeting risks..." oninput="autoSave()"></div></div>
+        </div>
+        <div class="tab-content" id="wt-attributes">
+          <div class="two-col" style="margin-bottom:14px">
+            <div class="data-card"><div class="data-card-header">Attribute overview</div><table class="data-table">
+              <tr><td>Total attributes</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>In active use</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Unused / stale</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Duplicate variants found?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Non-standard naming?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+            </table></div>
+            <div class="data-card"><div class="data-card-header">Key attribute checks</div><table class="data-table">
+              <tr><td>Phone field — standard name?</td><td><input class="ti" placeholder="Yes / No / Variants" oninput="autoSave()"></td></tr>
+              <tr><td>Email field — standard name?</td><td><input class="ti" placeholder="Yes / No / Variants" oninput="autoSave()"></td></tr>
+              <tr><td>Created_at — consistent?</td><td><input class="ti" placeholder="Yes / No / Variants" oninput="autoSave()"></td></tr>
+              <tr><td>Geography field exists?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Consent / opt-in attribute?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Source field on profiles?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+            </table></div>
+          </div>
+          <div class="notes-box"><div class="notes-header">Attribute variant log</div><div class="notes-body" contenteditable="true" data-placeholder="List duplicate or non-standard attributes: canonical_name (keep) vs variant_name (null out)." oninput="autoSave()"></div></div>
+        </div>
+        <div class="tab-content" id="wt-events">
+          <div class="two-col" style="margin-bottom:14px">
+            <div class="data-card"><div class="data-card-header">Event overview</div><table class="data-table">
+              <tr><td>Total events tracked</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>In active use</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>iOS SDK events</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Web / JS events</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Server-side events</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Unknown / error source</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Stale / test events to remove</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+            </table></div>
+            <div class="data-card"><div class="data-card-header">Event quality checks</div><table class="data-table">
+              <tr><td>Source field on all events?</td><td><input class="ti" placeholder="Yes / No / Partial" oninput="autoSave()"></td></tr>
+              <tr><td>Key activation events present?</td><td><input class="ti" placeholder="Yes / No / Partial" oninput="autoSave()"></td></tr>
+              <tr><td>Events with unique IDs?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Timestamps — correct format?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Events to implement (missing)?</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Any events with X icon?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+            </table></div>
+          </div>
+          <div class="notes-box"><div class="notes-header">Event audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="List key events. Flag any with unknown source, missing fields, or needing implementation." oninput="autoSave()"></div></div>
+        </div>
+        <div class="tab-content" id="wt-sources">
+          <div class="two-col" style="margin-bottom:14px">
+            <div class="data-card"><div class="data-card-header">Data In sources</div><table class="data-table">
+              <tr><td>Total active sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>iOS SDK sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Server-side / API sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>JavaScript snippet sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>WM has Admin/Support access?</td><td><input class="ti" placeholder="Yes / No — BLOCKER" oninput="autoSave()"></td></tr>
+            </table></div>
+            <div class="data-card"><div class="data-card-header">Per-source checks</div><table class="data-table">
+              <tr><td>Last received timestamp OK?</td><td><input class="ti" placeholder="Yes / No / Unknown" oninput="autoSave()"></td></tr>
+              <tr><td>Attribute names standardised?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Source field in payloads?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Dual-destination forwarding on?</td><td><input class="ti" placeholder="Yes / No / Unknown" oninput="autoSave()"></td></tr>
+              <tr><td>Sample payloads obtained?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+            </table></div>
+          </div>
+          <div class="notes-box"><div class="notes-header">Source audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="List each source ID/name, type, geography it serves, and open questions." oninput="autoSave()"></div></div>
+        </div>
+        <div class="tab-content" id="wt-automations">
+          <div class="two-col" style="margin-bottom:14px">
+            <div class="data-card"><div class="data-card-header">Automation overview</div><table class="data-table">
+              <tr><td>Total workflows / journeys</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Active workflows</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Paused / draft</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
+              <tr><td>Custom objects in use?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+              <tr><td>Webhooks configured?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
+            </table></div>
+            <div class="data-card"><div class="data-card-header">Key flows to audit</div><table class="data-table">
+              <tr><td>Welcome / onboarding flow</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
+              <tr><td>First activation flow</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
+              <tr><td>Re-engagement / winback flow</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
+              <tr><td>Transactional flows</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
+              <tr><td>Who built existing flows?</td><td><input class="ti" placeholder="Client / WM / Unknown" oninput="autoSave()"></td></tr>
+            </table></div>
+          </div>
+          <div class="notes-box"><div class="notes-header">Automation notes</div><div class="notes-body" contenteditable="true" data-placeholder="Describe what automations are running, which are healthy, broken, or need to be built." oninput="autoSave()"></div></div>
         </div>
       </div>
-      <div class="section">
-        <div class="section-header"><div class="section-title">Initial data flags</div></div>
-        <div class="data-card">
-          <div class="data-card-header">What stood out immediately?<button class="btn btn-ghost btn-sm" onclick="addFlag()">+ Add</button></div>
-          <table class="data-table" id="flags-table">
-            <tr><td><input class="til" placeholder="Issue or observation" oninput="autoSave()"></td><td><select class="ti" style="cursor:pointer" onchange="autoSave()"><option value="high">🔴 High</option><option value="med">🟡 Med</option><option value="low">🟢 Low</option></select></td></tr>
-            <tr><td><input class="til" placeholder="Issue or observation" oninput="autoSave()"></td><td><select class="ti" style="cursor:pointer" onchange="autoSave()"><option value="high">🔴 High</option><option value="med">🟡 Med</option><option value="low">🟢 Low</option></select></td></tr>
-            <tr><td><input class="til" placeholder="Issue or observation" oninput="autoSave()"></td><td><select class="ti" style="cursor:pointer" onchange="autoSave()"><option value="high">🔴 High</option><option value="med">🟡 Med</option><option value="low">🟢 Low</option></select></td></tr>
-          </table>
+
+      <!-- CHECKLIST -->
+      <div class="page" id="page-checklist">
+        <div class="section">
+          <div class="section-header"><div class="section-title">Intake checklist</div><button class="btn btn-ghost btn-sm" onclick="showAddCheckForm()">+ Add item</button></div>
+          <p style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">Click any item to cycle: <strong>Not started → Done → In progress → Blocked</strong></p>
+          <div class="check-cat">Access & Setup</div>
+          <div class="checklist" id="cl-access">
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Workspace access confirmed</div><div class="check-desc">WM team has logged in. Confirm role — Admin, Support, or Author. Flag if less than Admin.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Admin / Support role obtained</div><div class="check-desc">Required to see Data In sources. If WM only has Author, raise as a blocker immediately.</div><div class="check-meta"><span class="check-owner">Owner: Client</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">NDA and project brief signed</div><div class="check-desc">Confirm NDA is countersigned and SOW is agreed before sensitive data is accessed.</div><div class="check-meta"><span class="check-owner">Owner: WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Kickoff meeting completed</div><div class="check-desc">Kickoff held with all stakeholders. Notes documented. Owners confirmed. Blockers surfaced.</div><div class="check-meta"><span class="check-owner">Owner: WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
+          </div>
+          <div class="check-cat" style="margin-top:16px">Data Audit</div>
+          <div class="checklist" id="cl-data">
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Profile count and breakdown pulled</div><div class="check-desc">Total, active, inactive, with/without email. Unusual identifier patterns. Billable count for cost impact.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All campaigns inventoried</div><div class="check-desc">Full list: name, status, trigger type, delivered volume, open and click rates. Flag missing geography tags or broken triggers.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Full attribute index audited</div><div class="check-desc">Pull every attribute. Identify duplicates, stale fields, non-standard naming. Note % of profiles each appears on.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All events inventoried and source-typed</div><div class="check-desc">List every event. Record source type. Flag X-icon events, stale test events, events missing source field.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Data In sources audited</div><div class="check-desc">Confirm type, last received timestamp, attribute names, dual-destination forwarding, sample payloads. Requires Admin access.</div><div class="check-meta"><span class="check-owner">Owner: WM (requires Admin)</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All workflows and automations documented</div><div class="check-desc">List every active workflow. Who built it? Healthy? Dependencies on campaigns, custom objects, or webhooks?</div><div class="check-meta"><span class="check-owner">Owner: WM + Client</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Sample event payloads obtained from client</div><div class="check-desc">Request actual JSON payloads for top 5–10 events. Verify attribute names, source field, timestamp format.</div><div class="check-meta"><span class="check-owner">Owner: Client Engineering</span></div></div><span class="check-status status-pend">Not started</span></div>
+          </div>
+          <div class="check-cat" style="margin-top:16px">Client Decisions Required</div>
+          <div class="checklist" id="cl-client">
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Geography logic confirmed</div><div class="check-desc">How is US vs International determined? Must be agreed before segmentation work begins.</div><div class="check-meta"><span class="check-owner">Owner: Client — decision needed</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All campaigns tagged by geography / audience type</div><div class="check-desc">Every active campaign labelled before migration starts. Mis-tagging is the primary risk to live sends.</div><div class="check-meta"><span class="check-owner">Owner: Client + WM to validate</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Migration direction agreed internally</div><div class="check-desc">Client has confirmed the migration approach with all internal stakeholders before WM begins.</div><div class="check-meta"><span class="check-owner">Owner: Client — internal sign-off</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">SDK / backend naming updates confirmed</div><div class="check-desc">Client engineering will update all attribute names to match the agreed standard. Timeline agreed.</div><div class="check-meta"><span class="check-owner">Owner: Client Engineering</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Consent / subscription conflict handling agreed</div><div class="check-desc">If merging profiles, what happens when two profiles have different opt-in statuses?</div><div class="check-meta"><span class="check-owner">Owner: Client — decision needed</span></div></div><span class="check-status status-pend">Not started</span></div>
+          </div>
+          <div class="check-cat" style="margin-top:16px">Governance & Sign-offs</div>
+          <div class="checklist" id="cl-governance">
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Sign-off process agreed for irreversible actions</div><div class="check-desc">Any irreversible action must have a documented sign-off process agreed before Phase 1 starts.</div><div class="check-meta"><span class="check-owner">Owner: WM PM + Client lead</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Rollback / recovery plan documented</div><div class="check-desc">For every phase, document what can and cannot be undone. Share with the client before sign-off.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Migration timing blackout dates confirmed</div><div class="check-desc">Identify peak revenue periods where no migration work should occur.</div><div class="check-meta"><span class="check-owner">Owner: Client + WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Weekly status update cadence agreed</div><div class="check-desc">Agree how and when WM communicates progress. Set expectations early.</div><div class="check-meta"><span class="check-owner">Owner: WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
+          </div>
+          <div id="add-check-form" style="display:none;margin-top:12px">
+            <div class="add-row">
+              <input class="add-input" id="new-check-title" placeholder="Item title">
+              <input class="add-input" id="new-check-desc" placeholder="Description (optional)" style="flex:2">
+              <input class="add-input" id="new-check-owner" placeholder="Owner" style="flex:.7">
+              <button class="btn btn-primary btn-sm" onclick="saveNewCheckItem()">Add</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('add-check-form').style.display='none'">Cancel</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- WORKSPACE -->
-  <div class="page" id="page-workspace">
-    <div class="section">
-      <div class="section-header"><div class="section-title">ESP Platform</div></div>
-      <div class="chip-row" id="esp-chips">
-        <span class="chip" onclick="toggleChip(this)">Customer.io</span><span class="chip" onclick="toggleChip(this)">Klaviyo</span><span class="chip" onclick="toggleChip(this)">Braze</span><span class="chip" onclick="toggleChip(this)">Iterable</span><span class="chip" onclick="toggleChip(this)">HubSpot</span><span class="chip" onclick="toggleChip(this)">Salesforce</span><span class="chip" onclick="toggleChip(this)">Mailchimp</span><span class="chip" onclick="toggleChip(this)">Omnisend</span><span class="chip" onclick="toggleChip(this)">Constant Contact</span><span class="chip" onclick="toggleChip(this)">Other</span>
-      </div>
-    </div>
-    <div class="tab-bar">
-      <div class="tab active" onclick="switchTab(this,'wt-profiles')">Profiles</div>
-      <div class="tab" onclick="switchTab(this,'wt-campaigns')">Campaigns</div>
-      <div class="tab" onclick="switchTab(this,'wt-attributes')">Attributes</div>
-      <div class="tab" onclick="switchTab(this,'wt-events')">Events</div>
-      <div class="tab" onclick="switchTab(this,'wt-sources')">Data Sources</div>
-      <div class="tab" onclick="switchTab(this,'wt-automations')">Automations</div>
-    </div>
-    <div class="tab-content active" id="wt-profiles">
-      <div class="two-col" style="margin-bottom:14px">
-        <div class="data-card"><div class="data-card-header">Profile overview</div><table class="data-table">
-          <tr><td>Total profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Active profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Inactive profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Profiles with email</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Profiles without email</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Estimated billable profiles</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-        </table></div>
-        <div class="data-card"><div class="data-card-header">Identifier patterns</div><table class="data-table">
-          <tr><td>Primary ID type</td><td><input class="ti" placeholder="e.g. email / UUID" oninput="autoSave()"></td></tr>
-          <tr><td>Any prefix patterns?</td><td><input class="ti" placeholder="e.g. dacc-, 0x-" oninput="autoSave()"></td></tr>
-          <tr><td>Duplicate risk</td><td><input class="ti" placeholder="Yes / No / Unknown" oninput="autoSave()"></td></tr>
-          <tr><td>Geography split known?</td><td><input class="ti" placeholder="Yes / No / TBD" oninput="autoSave()"></td></tr>
-          <tr><td>Suppression list exists?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Consent / opt-in tracked?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-        </table></div>
-      </div>
-      <div class="notes-box"><div class="notes-header">Profile audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="Note anything unusual about the profile structure..." oninput="autoSave()"></div></div>
-    </div>
-    <div class="tab-content" id="wt-campaigns">
-      <div class="two-col" style="margin-bottom:14px">
-        <div class="data-card"><div class="data-card-header">Campaign inventory</div><table class="data-table">
-          <tr><td>Total campaigns</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Active / running</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Paused / stopped</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Archived</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Avg open rate</td><td><input class="ti" placeholder="—%" oninput="autoSave()"></td></tr>
-          <tr><td>Avg click rate</td><td><input class="ti" placeholder="—%" oninput="autoSave()"></td></tr>
-        </table></div>
-        <div class="data-card"><div class="data-card-header">Campaign health</div><table class="data-table">
-          <tr><td>Geography tagged?</td><td><input class="ti" placeholder="X of Y tagged" oninput="autoSave()"></td></tr>
-          <tr><td>Trigger type: event-based</td><td><input class="ti" placeholder="Count" oninput="autoSave()"></td></tr>
-          <tr><td>Trigger type: segment-based</td><td><input class="ti" placeholder="Count" oninput="autoSave()"></td></tr>
-          <tr><td>Trigger type: scheduled</td><td><input class="ti" placeholder="Count" oninput="autoSave()"></td></tr>
-          <tr><td>Using deprecated triggers?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Any campaigns to archive?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-        </table></div>
-      </div>
-      <div class="notes-box"><div class="notes-header">Campaign audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="Note top performing campaigns, broken triggers, mis-targeting risks..." oninput="autoSave()"></div></div>
-    </div>
-    <div class="tab-content" id="wt-attributes">
-      <div class="two-col" style="margin-bottom:14px">
-        <div class="data-card"><div class="data-card-header">Attribute overview</div><table class="data-table">
-          <tr><td>Total attributes</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>In active use</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Unused / stale</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Duplicate variants found?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Non-standard naming?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-        </table></div>
-        <div class="data-card"><div class="data-card-header">Key attribute checks</div><table class="data-table">
-          <tr><td>Phone field — standard name?</td><td><input class="ti" placeholder="Yes / No / Variants" oninput="autoSave()"></td></tr>
-          <tr><td>Email field — standard name?</td><td><input class="ti" placeholder="Yes / No / Variants" oninput="autoSave()"></td></tr>
-          <tr><td>Created_at — consistent?</td><td><input class="ti" placeholder="Yes / No / Variants" oninput="autoSave()"></td></tr>
-          <tr><td>Geography field exists?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Consent / opt-in attribute?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Source field on profiles?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-        </table></div>
-      </div>
-      <div class="notes-box"><div class="notes-header">Attribute variant log</div><div class="notes-body" contenteditable="true" data-placeholder="List duplicate or non-standard attributes. Format: canonical_name (keep) vs variant_name (null out)." oninput="autoSave()"></div></div>
-    </div>
-    <div class="tab-content" id="wt-events">
-      <div class="two-col" style="margin-bottom:14px">
-        <div class="data-card"><div class="data-card-header">Event overview</div><table class="data-table">
-          <tr><td>Total events tracked</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>In active use</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>iOS SDK events</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Web / JS events</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Server-side events</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Unknown / error source</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Stale / test events to remove</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-        </table></div>
-        <div class="data-card"><div class="data-card-header">Event quality checks</div><table class="data-table">
-          <tr><td>Source field on all events?</td><td><input class="ti" placeholder="Yes / No / Partial" oninput="autoSave()"></td></tr>
-          <tr><td>Key activation events present?</td><td><input class="ti" placeholder="Yes / No / Partial" oninput="autoSave()"></td></tr>
-          <tr><td>Events with unique IDs?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Timestamps — correct format?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Events to implement (missing)?</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Any events with X icon?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-        </table></div>
-      </div>
-      <div class="notes-box"><div class="notes-header">Event audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="List key events, flag any with unknown source, missing fields, or needing implementation." oninput="autoSave()"></div></div>
-    </div>
-    <div class="tab-content" id="wt-sources">
-      <div class="two-col" style="margin-bottom:14px">
-        <div class="data-card"><div class="data-card-header">Data In sources</div><table class="data-table">
-          <tr><td>Total active sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>iOS SDK sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Server-side / API sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>JavaScript snippet sources</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>WM has Admin/Support access?</td><td><input class="ti" placeholder="Yes / No — BLOCKER" oninput="autoSave()"></td></tr>
-        </table></div>
-        <div class="data-card"><div class="data-card-header">Per-source checks</div><table class="data-table">
-          <tr><td>Last received timestamp OK?</td><td><input class="ti" placeholder="Yes / No / Unknown" oninput="autoSave()"></td></tr>
-          <tr><td>Attribute names standardised?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Source field in payloads?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Dual-destination forwarding on?</td><td><input class="ti" placeholder="Yes / No / Unknown" oninput="autoSave()"></td></tr>
-          <tr><td>Sample payloads obtained?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-        </table></div>
-      </div>
-      <div class="notes-box"><div class="notes-header">Source audit notes</div><div class="notes-body" contenteditable="true" data-placeholder="List each source ID/name, type, geography it serves, and open questions." oninput="autoSave()"></div></div>
-    </div>
-    <div class="tab-content" id="wt-automations">
-      <div class="two-col" style="margin-bottom:14px">
-        <div class="data-card"><div class="data-card-header">Automation overview</div><table class="data-table">
-          <tr><td>Total workflows / journeys</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Active workflows</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Paused / draft</td><td><input class="ti" placeholder="—" oninput="autoSave()"></td></tr>
-          <tr><td>Custom objects in use?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-          <tr><td>Webhooks configured?</td><td><input class="ti" placeholder="Yes / No" oninput="autoSave()"></td></tr>
-        </table></div>
-        <div class="data-card"><div class="data-card-header">Key flows to audit</div><table class="data-table">
-          <tr><td>Welcome / onboarding flow</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
-          <tr><td>First activation flow</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
-          <tr><td>Re-engagement / winback flow</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
-          <tr><td>Transactional flows</td><td><input class="ti" placeholder="Exists / Missing" oninput="autoSave()"></td></tr>
-          <tr><td>Who built existing flows?</td><td><input class="ti" placeholder="Client / WM / Unknown" oninput="autoSave()"></td></tr>
-        </table></div>
-      </div>
-      <div class="notes-box"><div class="notes-header">Automation notes</div><div class="notes-body" contenteditable="true" data-placeholder="Describe what automations are running, which are healthy, broken, or need to be built." oninput="autoSave()"></div></div>
-    </div>
-  </div>
-
-  <!-- CHECKLIST -->
-  <div class="page" id="page-checklist">
-    <div class="section">
-      <div class="section-header"><div class="section-title">Intake checklist</div><button class="btn btn-ghost btn-sm" onclick="showAddCheckForm()">+ Add item</button></div>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">Click any item to cycle: <strong>Not started → Done → In progress → Blocked</strong></p>
-      <div class="check-cat">Access & Setup</div>
-      <div class="checklist" id="cl-access">
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Workspace access confirmed</div><div class="check-desc">WM team has logged in. Confirm role — Admin, Support, or Author. Flag if less than Admin.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Admin / Support role obtained</div><div class="check-desc">Required to see Data In sources and pipeline settings. If WM only has Author, raise as a blocker immediately.</div><div class="check-meta"><span class="check-owner">Owner: Client</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">NDA and project brief signed</div><div class="check-desc">Confirm NDA is countersigned and SOW is agreed before sensitive data is accessed or shared.</div><div class="check-meta"><span class="check-owner">Owner: WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Kickoff meeting completed</div><div class="check-desc">Kickoff held with all stakeholders. Notes documented. Owners confirmed for each phase. Blockers surfaced and logged.</div><div class="check-meta"><span class="check-owner">Owner: WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
-      </div>
-      <div class="check-cat" style="margin-top:16px">Data Audit</div>
-      <div class="checklist" id="cl-data">
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Profile count and breakdown pulled</div><div class="check-desc">Total, active, inactive, with/without email. Any unusual identifier patterns. Billable count noted for cost impact.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All campaigns inventoried</div><div class="check-desc">Full list: name, status, trigger type, delivered volume, open and click rates. Flag missing geography tags, broken triggers, or low engagement.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Full attribute index audited</div><div class="check-desc">Pull every attribute. Identify duplicates (phone vs phone_number), stale fields, non-standard naming. Note % of profiles each appears on.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All events inventoried and source-typed</div><div class="check-desc">List every event. Record source type (iOS SDK / JS / server-side / unknown). Flag X-icon events, stale test events, events missing source field.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Data In sources audited</div><div class="check-desc">For each source: confirm type, last received timestamp, attribute names sent, dual-destination forwarding, sample payloads. Requires Admin access.</div><div class="check-meta"><span class="check-owner">Owner: WM (requires Admin)</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All workflows and automations documented</div><div class="check-desc">List every active workflow. Who built it? Is it healthy? Dependencies on campaigns, custom objects, or webhooks?</div><div class="check-meta"><span class="check-owner">Owner: WM + Client</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Sample event payloads obtained from client</div><div class="check-desc">Request actual JSON payloads for top 5–10 events. Verify attribute names, confirm source field, check timestamp format.</div><div class="check-meta"><span class="check-owner">Owner: Client Engineering</span></div></div><span class="check-status status-pend">Not started</span></div>
-      </div>
-      <div class="check-cat" style="margin-top:16px">Client Decisions Required</div>
-      <div class="checklist" id="cl-client">
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Geography logic confirmed</div><div class="check-desc">How is US vs International determined? Phone prefix? Payment address? IP at registration? Must be agreed before segmentation begins.</div><div class="check-meta"><span class="check-owner">Owner: Client — decision needed</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">All campaigns tagged by geography / audience type</div><div class="check-desc">Every active campaign labelled before migration or segmentation work starts. Mis-tagging is the primary risk to live sends.</div><div class="check-meta"><span class="check-owner">Owner: Client + WM to validate</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Migration direction agreed internally</div><div class="check-desc">Client has confirmed the migration approach with all internal stakeholders before WM begins migration prep.</div><div class="check-meta"><span class="check-owner">Owner: Client — internal sign-off</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">SDK / backend naming updates confirmed</div><div class="check-desc">Client engineering will update all attribute names via SDK and backend to match the agreed standard. Timeline agreed.</div><div class="check-meta"><span class="check-owner">Owner: Client Engineering</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Consent / subscription conflict handling agreed</div><div class="check-desc">If merging profiles, what happens when two profiles have different opt-in statuses? Client must decide the rule before any merge.</div><div class="check-meta"><span class="check-owner">Owner: Client — decision needed</span></div></div><span class="check-status status-pend">Not started</span></div>
-      </div>
-      <div class="check-cat" style="margin-top:16px">Governance & Sign-offs</div>
-      <div class="checklist" id="cl-governance">
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Sign-off process agreed for irreversible actions</div><div class="check-desc">Any irreversible action (deletions, merges, attribute nulling) must have a documented sign-off process agreed before Phase 1 starts.</div><div class="check-meta"><span class="check-owner">Owner: WM PM + Client lead</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Rollback / recovery plan documented</div><div class="check-desc">For every phase, document what can and cannot be undone. Share with the client before sign-off. This protects WM.</div><div class="check-meta"><span class="check-owner">Owner: WM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Migration timing blackout dates confirmed</div><div class="check-desc">Identify peak revenue periods where no migration work should occur. Get these dates before finalising any timeline.</div><div class="check-meta"><span class="check-owner">Owner: Client + WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-content"><div class="check-title">Weekly status update cadence agreed</div><div class="check-desc">Agree how and when WM communicates progress — email, shared doc, Slack, or call. Set expectations early.</div><div class="check-meta"><span class="check-owner">Owner: WM PM</span></div></div><span class="check-status status-pend">Not started</span></div>
-      </div>
-      <div id="add-check-form" style="display:none;margin-top:12px">
-        <div class="add-row">
-          <input class="add-input" id="new-check-title" placeholder="Item title">
-          <input class="add-input" id="new-check-desc" placeholder="Description (optional)" style="flex:2">
-          <input class="add-input" id="new-check-owner" placeholder="Owner" style="flex:.7">
-          <button class="btn btn-primary btn-sm" onclick="saveNewCheckItem()">Add</button>
-          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('add-check-form').style.display='none'">Cancel</button>
+      <!-- RISK ASSESSMENT -->
+      <div class="page" id="page-risk">
+        <div class="section">
+          <div class="section-header"><div class="section-title">Risk factors</div></div>
+          <p style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Score each factor — overall risk calculates automatically and syncs to the hero badge.</p>
+          <div class="risk-grid" id="risk-grid">
+            <div class="risk-item"><div class="risk-item-label">Data complexity</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
+            <div class="risk-item"><div class="risk-item-label">Profile duplication risk</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High — irreversible</option></select></div>
+            <div class="risk-item"><div class="risk-item-label">Active campaign count</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low (&lt;10)</option><option value="med">Medium (10–30)</option><option value="high">High (30+)</option></select></div>
+            <div class="risk-item"><div class="risk-item-label">WM access level</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — Full Admin</option><option value="med">Medium — Support</option><option value="high">High — Author only</option></select></div>
+            <div class="risk-item"><div class="risk-item-label">SDK / integration complexity</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — one source</option><option value="med">Medium — 2–3 sources</option><option value="high">High — many sources</option></select></div>
+            <div class="risk-item"><div class="risk-item-label">Migration timing constraints</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — flexible</option><option value="med">Medium — some windows</option><option value="high">High — strict blackouts</option></select></div>
+            <div class="risk-item"><div class="risk-item-label">Client responsiveness</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — fast responses</option><option value="med">Medium — occasional delays</option><option value="high">High — slow / many stakeholders</option></select></div>
+            <div class="risk-item"><div class="risk-item-label">Irreversible actions required</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — none</option><option value="med">Medium — minor</option><option value="high">High — deletions / merges</option></select></div>
+            <div class="risk-item" style="border-color:var(--border-strong)"><div class="risk-item-label">Overall project risk</div><div id="overall-risk" style="font-size:18px;font-weight:600;color:var(--text-tertiary);margin-top:2px">—</div></div>
+          </div>
+        </div>
+        <div class="section" style="margin-top:20px">
+          <div class="section-header"><div class="section-title">Blockers log</div><button class="btn btn-ghost btn-sm" onclick="addBlocker()">+ Add blocker</button></div>
+          <div class="checklist" id="blockers-list">
+            <div class="check-item blocked"><div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><line x1="3" y1="3" x2="9" y2="9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><line x1="9" y1="3" x2="3" y2="9" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="check-content"><div class="check-title" contenteditable="true" style="outline:none" oninput="autoSave()">Click to edit blocker description</div><div class="check-desc" contenteditable="true" style="outline:none" oninput="autoSave()">What exactly needs to happen to resolve this?</div><div class="check-meta"><span class="check-owner" contenteditable="true" style="outline:none" oninput="autoSave()">Owner: —</span></div></div><span class="check-status status-block">Blocked</span></div>
+          </div>
+        </div>
+        <div class="section"><div class="section-header"><div class="section-title">Risk mitigation notes</div></div>
+          <div class="notes-box"><div class="notes-body" contenteditable="true" data-placeholder="Document key risks and how WM plans to mitigate them. Include rollback plans. This protects WM if something goes wrong." oninput="autoSave()"></div></div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- RISK -->
-  <div class="page" id="page-risk">
-    <div class="section">
-      <div class="section-header"><div class="section-title">Risk factors</div></div>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Score each factor — overall risk calculates automatically and syncs to the hero badge.</p>
-      <div class="risk-grid" id="risk-grid">
-        <div class="risk-item"><div class="risk-item-label">Data complexity</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
-        <div class="risk-item"><div class="risk-item-label">Profile duplication risk</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High — irreversible</option></select></div>
-        <div class="risk-item"><div class="risk-item-label">Active campaign count</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low (&lt;10)</option><option value="med">Medium (10–30)</option><option value="high">High (30+)</option></select></div>
-        <div class="risk-item"><div class="risk-item-label">WM access level</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — Full Admin</option><option value="med">Medium — Support</option><option value="high">High — Author only</option></select></div>
-        <div class="risk-item"><div class="risk-item-label">SDK / integration complexity</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — one source</option><option value="med">Medium — 2–3 sources</option><option value="high">High — many sources</option></select></div>
-        <div class="risk-item"><div class="risk-item-label">Migration timing constraints</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — flexible</option><option value="med">Medium — some windows</option><option value="high">High — strict blackouts</option></select></div>
-        <div class="risk-item"><div class="risk-item-label">Client responsiveness</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — fast responses</option><option value="med">Medium — occasional delays</option><option value="high">High — slow / many stakeholders</option></select></div>
-        <div class="risk-item"><div class="risk-item-label">Irreversible actions required</div><select class="risk-selector" onchange="updateRisk(this)"><option value="">—</option><option value="low">Low — none</option><option value="med">Medium — minor</option><option value="high">High — deletions / merges</option></select></div>
-        <div class="risk-item" style="border-color:var(--border-strong)"><div class="risk-item-label">Overall project risk</div><div id="overall-risk" style="font-size:18px;font-weight:600;color:var(--text-tertiary);margin-top:2px">—</div></div>
-      </div>
-    </div>
-    <div class="section" style="margin-top:20px">
-      <div class="section-header"><div class="section-title">Blockers log</div><button class="btn btn-ghost btn-sm" onclick="addBlocker()">+ Add blocker</button></div>
-      <div class="checklist" id="blockers-list">
-        <div class="check-item blocked"><div class="check-box"><svg class="check-icon" viewBox="0 0 12 12"><line x1="3" y1="3" x2="9" y2="9" stroke="white" stroke-width="1.8" stroke-linecap="round"/><line x1="9" y1="3" x2="3" y2="9" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="check-content"><div class="check-title" contenteditable="true" style="outline:none" oninput="autoSave()">Click to edit blocker description</div><div class="check-desc" contenteditable="true" style="outline:none" oninput="autoSave()">What exactly needs to happen to resolve this?</div><div class="check-meta"><span class="check-owner" contenteditable="true" style="outline:none" oninput="autoSave()">Owner: —</span></div></div><span class="check-status status-block">Blocked</span></div>
-      </div>
-    </div>
-    <div class="section">
-      <div class="section-header"><div class="section-title">Risk mitigation notes</div></div>
-      <div class="notes-box"><div class="notes-body" contenteditable="true" data-placeholder="Document key risks and how WM plans to mitigate them. Include rollback plans and what the client has been warned about. This protects WM if something goes wrong." oninput="autoSave()"></div></div>
-    </div>
-  </div>
-
-  <!-- SUMMARY -->
-  <div class="page" id="page-summary">
-    <div class="section">
-      <div class="section-header"><div class="section-title">Client-facing summary</div></div>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">Edit directly — copy to clipboard or export as PDF to send to the client. Plain language, no jargon.</p>
-    </div>
-    <div class="summary-box">
-      <div class="summary-label">Project Snapshot — <span id="summary-client-name">Client Name</span></div>
-      <div class="summary-text" id="summary-text" contenteditable="true" oninput="autoSave()" data-placeholder="Write the client-facing summary here...">WORKSPACE OVERVIEW
+      <!-- CLIENT SUMMARY -->
+      <div class="page" id="page-summary">
+        <div class="section">
+          <div class="section-header"><div class="section-title">Client-facing summary</div></div>
+          <p style="font-size:12px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">Edit directly — copy or export as PDF to send to the client. Plain language, no jargon.</p>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">Project Snapshot — <span id="summary-client-name">Client Name</span></div>
+          <div class="summary-text" id="summary-text" contenteditable="true" oninput="autoSave()" data-placeholder="Write the client-facing summary here...">WORKSPACE OVERVIEW
 [Describe what you found — profile count, campaign count, key data issues at a high level.]
 
 WHAT WE'VE COMPLETED
@@ -596,145 +645,142 @@ WHAT'S BLOCKED — ACTION NEEDED FROM YOU
 
 WHAT'S COMING NEXT
 [Describe the next 2–3 milestones and their dependencies.]</div>
-      <div class="summary-actions">
-        <button class="btn btn-ghost" style="border-color:#3A3835;color:#A09C97" onclick="copySummary()">Copy to clipboard</button>
-        <button class="btn btn-primary" onclick="window.print()">Export as PDF</button>
+          <div class="summary-actions">
+            <button class="btn btn-ghost" style="border-color:#3A3835;color:#A09C97" onclick="copySummary()">Copy to clipboard</button>
+            <button class="btn btn-primary" onclick="window.print()">Export as PDF</button>
+          </div>
+        </div>
+        <div class="section" style="margin-top:24px">
+          <div class="section-header"><div class="section-title">Open questions log</div><button class="btn btn-ghost btn-sm" onclick="addOpenQuestion()">+ Add</button></div>
+          <div class="data-card">
+            <div class="data-card-header">Questions that must be answered before work can progress</div>
+            <table class="data-table" id="oq-table">
+              <tr style="background:var(--surface2)"><td style="font-size:10px;font-weight:500;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;color:var(--text-tertiary)">Question</td><td style="font-size:10px;font-weight:500;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;color:var(--text-tertiary)">Owner / Due</td></tr>
+              <tr><td><input class="til" placeholder="What open question needs an answer?" oninput="autoSave()"></td><td><input class="ti" placeholder="Owner — by when" oninput="autoSave()"></td></tr>
+              <tr><td><input class="til" placeholder="What open question needs an answer?" oninput="autoSave()"></td><td><input class="ti" placeholder="Owner — by when" oninput="autoSave()"></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+  </div><!-- /main -->
+</div><!-- /tool-intake -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TOOL 2 — PROJECT TRACKER                  -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tool-view" id="tool-tracker">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-label">Active client</div>
+      <div style="padding:0 12px 10px">
+        <div class="client-dropdown-wrap">
+          <select class="client-dropdown" id="tracker-dropdown" onchange="onTrackerDropdownChange(this)">
+            <option value="">— Select a client —</option>
+          </select>
+          <span class="dropdown-arrow">▾</span>
+        </div>
       </div>
     </div>
+    <div class="sb-section">
+      <div class="sb-label">Actions</div>
+      <div class="nav-item" onclick="generateUpdate()"><span class="nav-dot warn"></span>Regenerate update</div>
+      <div class="nav-item" onclick="copyUpdate()"><span class="nav-dot"></span>Copy weekly update</div>
+    </div>
+    <div class="sb-footer">Project Tracker<br>v4.0 — Auto-saves locally</div>
+  </aside>
+  <div class="main-full" style="max-width:1000px">
+    <div class="section">
+      <div class="section-header"><div class="section-title">Project phases</div><button class="btn btn-ghost btn-sm" onclick="addPhase()">+ Add phase</button></div>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">Track each milestone. Click the status pill to cycle through states.</p>
+      <div class="phase-col-hdr"><span></span><span>Phase / Milestone</span><span>Status</span><span>Owner</span><span>Due date</span><span></span></div>
+      <div class="phase-board" id="phase-board"></div>
+    </div>
+    <div class="section" style="margin-top:28px">
+      <div class="section-header"><div class="section-title">Open blockers</div><button class="btn btn-ghost btn-sm" onclick="addBlockerCard()">+ Add blocker</button></div>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">P0 = must resolve before work continues. P1 = high priority. P2 = monitor.</p>
+      <div class="blocker-col-hdr"><span>Priority</span><span>Blocker description</span><span>Owner</span><span>Raised by</span><span>Status</span><span></span></div>
+      <div class="blocker-board" id="blocker-board"></div>
+    </div>
+    <div class="section" style="margin-top:28px">
+      <div class="section-header"><div class="section-title">Weekly update</div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="generateUpdate()">↺ Regenerate</button><button class="btn btn-primary btn-sm" onclick="copyUpdate()">Copy</button></div></div>
+      <div class="update-preview"><div class="update-preview-label">Auto-generated from phases + blockers above</div><div class="update-text" id="update-text">Click "Regenerate" to build the weekly update from your current phases and blockers.</div></div>
+    </div>
+  </div>
+</div><!-- /tool-tracker -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TOOL 3 — RISK SCORECARD                   -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tool-view" id="tool-scorecard">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-label">Active client</div>
+      <div style="padding:0 12px 10px">
+        <div class="client-dropdown-wrap">
+          <select class="client-dropdown" id="scorecard-dropdown" onchange="onScorecardDropdownChange(this)">
+            <option value="">— Select a client —</option>
+          </select>
+          <span class="dropdown-arrow">▾</span>
+        </div>
+      </div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-label">Project type</div>
+      <div class="nav-item active" id="sc-nav-migration" onclick="setScorecardType('migration',this)"><span class="nav-dot"></span>ESP Migration</div>
+      <div class="nav-item" id="sc-nav-cleanup" onclick="setScorecardType('cleanup',this)"><span class="nav-dot"></span>Data Cleanup</div>
+      <div class="nav-item" id="sc-nav-setup" onclick="setScorecardType('setup',this)"><span class="nav-dot"></span>New ESP Setup</div>
+      <div class="nav-item" id="sc-nav-audit" onclick="setScorecardType('audit',this)"><span class="nav-dot"></span>Audit Only</div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-label">Actions</div>
+      <div class="nav-item" onclick="copyScorecardSummary()"><span class="nav-dot"></span>Copy scorecard</div>
+    </div>
+    <div class="sb-footer">Risk Scorecard<br>v4.0 — Auto-saves locally</div>
+  </aside>
+  <div class="main-full" style="max-width:1000px">
+    <div class="two-col" style="margin-bottom:28px;align-items:start">
+      <div class="sc-result" id="sc-result">
+        <div class="sc-result-label">Overall risk tier</div>
+        <div class="sc-result-tier" id="sc-tier-label">—</div>
+        <div class="sc-score-bar"><div class="sc-score-fill" id="sc-score-fill" style="width:0%"></div></div>
+        <div class="sc-result-sub" id="sc-tier-sub">Rate factors on the right to see your score.</div>
+        <div class="sc-recs" id="sc-recs"></div>
+      </div>
+      <div>
+        <div class="data-card" style="margin-bottom:12px">
+          <div class="data-card-header">Engagement details</div>
+          <table class="data-table">
+            <tr><td>Source ESP</td><td><input class="ti" id="sc-source-esp" placeholder="e.g. Mailchimp" oninput="autoSave()"></td></tr>
+            <tr><td>Target ESP</td><td><input class="ti" id="sc-target-esp" placeholder="e.g. Customer.io" oninput="autoSave()"></td></tr>
+            <tr><td>Profile count</td><td><input class="ti" id="sc-profiles" placeholder="e.g. 500K" oninput="autoSave()"></td></tr>
+            <tr><td>Active campaigns</td><td><input class="ti" id="sc-camp-count" placeholder="e.g. 24" oninput="autoSave()"></td></tr>
+            <tr><td>Proposed timeline</td><td><input class="ti" id="sc-timeline" placeholder="e.g. 6 weeks" oninput="autoSave()"></td></tr>
+            <tr><td>WM lead</td><td><input class="ti" id="sc-lead" placeholder="Name" oninput="autoSave()"></td></tr>
+          </table>
+        </div>
+        <div class="notes-box">
+          <div class="notes-header">Internal pricing notes — WM only</div>
+          <div class="notes-body" id="sc-pricing-notes" contenteditable="true" data-placeholder="How does this risk level affect the quote? Any buffer hours or contingency needed?" oninput="autoSave()"></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title">Risk factors</div><button class="btn btn-ghost btn-sm" onclick="addScorecardFactor()">+ Add factor</button></div>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">Rate each factor. Score updates live. Edit names or notes inline — delete any that don't apply.</p>
+      <div class="sc-factor-hdr"><span>Factor</span><span>Notes</span><span>Rating</span><span></span></div>
+      <div class="sc-factor-board" id="sc-factor-board"></div>
+    </div>
     <div class="section" style="margin-top:24px">
-      <div class="section-header"><div class="section-title">Open questions log</div><button class="btn btn-ghost btn-sm" onclick="addOpenQuestion()">+ Add</button></div>
-      <div class="data-card">
-        <div class="data-card-header">Questions that must be answered before work can progress</div>
-        <table class="data-table" id="oq-table">
-          <tr style="background:var(--surface2)"><td style="font-size:10px;font-weight:500;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;color:var(--text-tertiary)">Question</td><td style="font-size:10px;font-weight:500;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;color:var(--text-tertiary)">Owner / Due</td></tr>
-          <tr><td><input class="til" placeholder="What open question needs an answer?" oninput="autoSave()"></td><td><input class="ti" placeholder="Owner — by when" oninput="autoSave()"></td></tr>
-          <tr><td><input class="til" placeholder="What open question needs an answer?" oninput="autoSave()"></td><td><input class="ti" placeholder="Owner — by when" oninput="autoSave()"></td></tr>
-        </table>
+      <div class="section-header"><div class="section-title">Scorecard export</div><button class="btn btn-primary btn-sm" onclick="copyScorecardSummary()">Copy scorecard</button></div>
+      <div class="notes-box">
+        <div class="notes-header">Auto-generated — copy for pre-sale or kickoff deck</div>
+        <div class="notes-body" id="sc-export-preview" style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.9;color:var(--text-secondary)" data-placeholder="Rate factors above to generate the export."></div>
       </div>
     </div>
   </div>
-
-  <!-- PROJECT TRACKER -->
-  <div class="page" id="page-tracker">
-
-    <!-- PHASES -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">Project phases</div>
-        <button class="btn btn-ghost btn-sm" onclick="addPhase()">+ Add phase</button>
-      </div>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">Track each milestone. Click the status pill to cycle through states.</p>
-      <div class="phase-col-hdr">
-        <span></span><span>Phase / Milestone</span><span>Status</span><span>Owner</span><span>Due date</span><span></span>
-      </div>
-      <div class="phase-board" id="phase-board">
-        <div class="phase-row ph-active">
-          <span class="phase-handle">⠿</span>
-          <input class="phase-name" placeholder="Phase name" value="Week 1 — Workspace audit" oninput="autoSave()">
-          <select class="phase-status st-active" onchange="phaseStatusChange(this);autoSave()">
-            <option value="todo">Not started</option>
-            <option value="active" selected>In progress</option>
-            <option value="done">Done</option>
-            <option value="blocked">Blocked</option>
-          </select>
-          <input class="phase-input" placeholder="Owner" value="WM" oninput="autoSave()">
-          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
-          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
-        </div>
-        <div class="phase-row">
-          <span class="phase-handle">⠿</span>
-          <input class="phase-name" placeholder="Phase name" value="Week 2 — Data cleanup plan" oninput="autoSave()">
-          <select class="phase-status st-todo" onchange="phaseStatusChange(this);autoSave()">
-            <option value="todo" selected>Not started</option>
-            <option value="active">In progress</option>
-            <option value="done">Done</option>
-            <option value="blocked">Blocked</option>
-          </select>
-          <input class="phase-input" placeholder="Owner" value="WM" oninput="autoSave()">
-          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
-          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
-        </div>
-        <div class="phase-row">
-          <span class="phase-handle">⠿</span>
-          <input class="phase-name" placeholder="Phase name" value="Week 3 — Client sign-offs" oninput="autoSave()">
-          <select class="phase-status st-todo" onchange="phaseStatusChange(this);autoSave()">
-            <option value="todo" selected>Not started</option>
-            <option value="active">In progress</option>
-            <option value="done">Done</option>
-            <option value="blocked">Blocked</option>
-          </select>
-          <input class="phase-input" placeholder="Owner" value="Client + WM" oninput="autoSave()">
-          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
-          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
-        </div>
-        <div class="phase-row">
-          <span class="phase-handle">⠿</span>
-          <input class="phase-name" placeholder="Phase name" value="Week 4 — Migration execution" oninput="autoSave()">
-          <select class="phase-status st-todo" onchange="phaseStatusChange(this);autoSave()">
-            <option value="todo" selected>Not started</option>
-            <option value="active">In progress</option>
-            <option value="done">Done</option>
-            <option value="blocked">Blocked</option>
-          </select>
-          <input class="phase-input" placeholder="Owner" value="WM" oninput="autoSave()">
-          <input class="phase-input" placeholder="Due date" value="" oninput="autoSave()">
-          <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- BLOCKERS -->
-    <div class="section" style="margin-top:28px">
-      <div class="section-header">
-        <div class="section-title">Open blockers</div>
-        <button class="btn btn-ghost btn-sm" onclick="addBlockerCard()">+ Add blocker</button>
-      </div>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">P0 = must resolve before work can continue. P1 = high priority. P2 = monitor. Click status to mark resolved.</p>
-      <div class="blocker-col-hdr">
-        <span>Priority</span><span>Blocker description</span><span>Owner</span><span>Raised by</span><span>Status</span><span></span>
-      </div>
-      <div class="blocker-board" id="blocker-board">
-        <div class="blocker-card bp0">
-          <select class="bl-priority bp0" onchange="blockerPriorityChange(this);autoSave()">
-            <option value="p0" selected>P0 — Critical</option>
-            <option value="p1">P1 — High</option>
-            <option value="p2">P2 — Monitor</option>
-          </select>
-          <input class="phase-input" style="font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-primary)" placeholder="Describe the blocker" oninput="autoSave()">
-          <input class="phase-input" placeholder="Owner" oninput="autoSave()">
-          <input class="phase-input" placeholder="Raised by" oninput="autoSave()">
-          <select class="phase-status st-blocked" onchange="blockerStatusChange(this);autoSave()">
-            <option value="open">Open</option>
-            <option value="inprog">In progress</option>
-            <option value="resolved">Resolved</option>
-          </select>
-          <button class="phase-del" onclick="this.closest('.blocker-card').remove();autoSave()">×</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- WEEKLY UPDATE GENERATOR -->
-    <div class="section" style="margin-top:28px">
-      <div class="section-header">
-        <div class="section-title">Weekly update generator</div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost btn-sm" onclick="generateUpdate()">↺ Regenerate</button>
-          <button class="btn btn-primary btn-sm" onclick="copyUpdate()">Copy to clipboard</button>
-        </div>
-      </div>
-      <div class="update-preview">
-        <div class="update-preview-label">
-          <span>Auto-generated from phases + blockers above</span>
-        </div>
-        <div class="update-text" id="update-text">Click "Regenerate" to generate the weekly update email from your current phases and blockers.</div>
-      </div>
-    </div>
-
-  </div><!-- /page-tracker -->
-
-  </div><!-- /dashboard -->
-</main>
-</div>
+</div><!-- /tool-scorecard -->
 
 <!-- NEW CLIENT MODAL -->
 <div class="modal-overlay" id="new-client-modal">
@@ -769,7 +815,7 @@ WHAT'S COMING NEXT
 <div class="modal-overlay" id="confirm-modal">
   <div class="confirm-modal">
     <div class="modal-title">Delete client intake?</div>
-    <div class="modal-sub" id="confirm-sub">This will permanently delete all data for this client. This cannot be undone.</div>
+    <div class="modal-sub" id="confirm-sub">This will permanently delete all data for this client.</div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
       <button class="btn btn-danger" id="confirm-del-btn">Delete</button>
@@ -780,195 +826,176 @@ WHAT'S COMING NEXT
 <div class="toast" id="toast"></div>
 
 <script>
-// ── STATE ──
-const SK = 'wm_clients_v2';
-const AK = 'wm_active_v2';
-let clients = {}, activeId = null, saveTimer = null;
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const SK='wm_clients_v4', AK='wm_active_v4';
+let clients={}, activeId=null, saveTimer=null, currentTool='intake', currentScType='migration';
 
-// ── BOOT ──
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  try { clients = JSON.parse(localStorage.getItem(SK)||'{}'); } catch(e){ clients={}; }
-  renderClientList();
-  const last = localStorage.getItem(AK);
-  if (last && clients[last]) loadClient(last);
-  document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); }));
-  document.getElementById('f-name').addEventListener('keydown', e => { if(e.key==='Enter') createClient(); });
+// ══════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  try{clients=JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){clients={};}
+  buildScorecardFactors(SC_FACTORS.migration.map(f=>({...f,rating:''})));
+  initDefaultPhases(); initDefaultBlockerCard();
+  renderAllDropdowns();
+  const last=localStorage.getItem(AK);
+  if(last&&clients[last]) loadClient(last);
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id);}));
+  document.getElementById('f-name').addEventListener('keydown',e=>{if(e.key==='Enter')createClient();});
 });
 
-// ── SAVE ──
-function save() {
-  try { localStorage.setItem(SK, JSON.stringify(clients)); localStorage.setItem(AK, activeId||''); } catch(e){}
+// ══════════════════════════════════════════
+// TOOL NAV
+// ══════════════════════════════════════════
+function switchTool(tool, el){
+  currentTool=tool;
+  document.querySelectorAll('.tool-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tool-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tool-'+tool).classList.add('active');
+  el.classList.add('active');
 }
 
-function autoSave() {
-  if (!activeId) return;
-  const dot = document.getElementById('as-dot'), txt = document.getElementById('as-txt');
-  dot.className = 'as-dot saving'; txt.textContent = 'Saving…';
+// ══════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════
+function save(){try{localStorage.setItem(SK,JSON.stringify(clients));localStorage.setItem(AK,activeId||'');}catch(e){}}
+
+function autoSave(){
+  if(!activeId)return;
+  const dot=document.getElementById('as-dot'),txt=document.getElementById('as-txt');
+  dot.className='as-dot saving';txt.textContent='Saving…';
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    clients[activeId].data = capture();
-    save();
-    renderClientList();
-    dot.className = 'as-dot saved'; txt.textContent = 'All changes saved';
-    setTimeout(()=>{ dot.className='as-dot'; }, 2000);
-  }, 700);
+  saveTimer=setTimeout(()=>{
+    clients[activeId].data=capture();
+    save(); renderAllDropdowns();
+    dot.className='as-dot saved';txt.textContent='All changes saved';
+    setTimeout(()=>{dot.className='as-dot';},2000);
+  },700);
 }
 
-// ── CAPTURE ALL FIELDS ──
-function capture() {
-  const d = {};
-  // hero
-  d.heroSub    = document.getElementById('hero-sub').textContent;
-  d.riskClass  = document.getElementById('hero-risk-badge').className;
-  d.riskText   = document.getElementById('hero-risk-badge').textContent;
-  d.metaEsp    = document.getElementById('meta-esp').value;
-  d.metaWs     = document.getElementById('meta-workspace').value;
-  d.metaLead   = document.getElementById('meta-wmlead').value;
-  d.metaCon    = document.getElementById('meta-contact').value;
-  // stats
+// ══════════════════════════════════════════
+// CAPTURE
+// ══════════════════════════════════════════
+function capture(){
+  const d={};
+  d.heroSub=document.getElementById('hero-sub').textContent;
+  d.riskClass=document.getElementById('hero-risk-badge').className;
+  d.riskText=document.getElementById('hero-risk-badge').textContent;
+  d.metaEsp=document.getElementById('meta-esp').value;
+  d.metaWs=document.getElementById('meta-workspace').value;
+  d.metaLead=document.getElementById('meta-wmlead').value;
+  d.metaCon=document.getElementById('meta-contact').value;
   ['profiles','campaigns','attributes','events','blockers'].forEach(k=>{
-    d['s_'+k]     = document.getElementById('stat-'+k).value;
-    d['s_'+k+'b'] = document.getElementById('stat-'+k+'-sub').value;
+    d['s_'+k]=document.getElementById('stat-'+k).value;
+    d['s_'+k+'b']=document.getElementById('stat-'+k+'-sub').value;
   });
-  d.scopeNotes = document.getElementById('scope-notes').innerHTML;
-  // contacts & flags
-  d.contacts = tblCapture('contacts-table');
-  d.flags    = tblCapture('flags-table');
-  // chips
-  d.chips = [...document.querySelectorAll('#esp-chips .chip.selected')].map(c=>c.textContent);
-  // workspace inputs + notes
-  d.wsInputs = [...document.querySelectorAll('#page-workspace .ti, #page-workspace .til')].map(i=>i.value);
-  d.wsNotes  = [...document.querySelectorAll('#page-workspace .notes-body')].map(n=>n.innerHTML);
-  // checklist
-  d.checklist = [...document.querySelectorAll('#page-checklist .check-item')].map(el=>({
-    state: ['checked','flagged','blocked'].find(c=>el.classList.contains(c))||'',
-    custom: el.dataset.custom==='1',
-    title: el.querySelector('.check-title')?.textContent||'',
-    desc: el.querySelector('.check-desc')?.textContent||'',
-    owner: el.querySelector('.check-owner')?.textContent||''
+  d.scopeNotes=document.getElementById('scope-notes').innerHTML;
+  d.contacts=tblCapture('contacts-table');
+  d.flags=tblCapture('flags-table');
+  d.chips=[...document.querySelectorAll('#esp-chips .chip.selected')].map(c=>c.textContent);
+  d.wsInputs=[...document.querySelectorAll('#page-workspace .ti, #page-workspace .til')].map(i=>i.value);
+  d.wsNotes=[...document.querySelectorAll('#page-workspace .notes-body')].map(n=>n.innerHTML);
+  d.checklist=[...document.querySelectorAll('#page-checklist .check-item')].map(el=>({
+    state:['checked','flagged','blocked'].find(c=>el.classList.contains(c))||'',
+    custom:el.dataset.custom==='1',title:el.querySelector('.check-title')?.textContent||'',
+    desc:el.querySelector('.check-desc')?.textContent||'',owner:el.querySelector('.check-owner')?.textContent||''
   }));
-  // risk
-  d.riskSels   = [...document.querySelectorAll('#risk-grid .risk-selector')].map(s=>s.value);
-  d.blockers   = [...document.querySelectorAll('#blockers-list .check-item')].map(el=>({
-    title: el.querySelector('.check-title')?.innerHTML||'',
-    desc:  el.querySelector('.check-desc')?.innerHTML||'',
-    owner: el.querySelector('.check-owner')?.innerHTML||''
+  d.riskSels=[...document.querySelectorAll('#risk-grid .risk-selector')].map(s=>s.value);
+  d.riskBlockers=[...document.querySelectorAll('#blockers-list .check-item')].map(el=>({
+    title:el.querySelector('.check-title')?.innerHTML||'',desc:el.querySelector('.check-desc')?.innerHTML||'',owner:el.querySelector('.check-owner')?.innerHTML||''
   }));
-  d.riskNotes  = document.querySelector('#page-risk .notes-body')?.innerHTML||'';
-  d.summaryText= document.getElementById('summary-text').innerHTML;
-  d.oq         = tblCapture('oq-table', 1);
+  d.riskNotes=document.querySelector('#page-risk .notes-body')?.innerHTML||'';
+  d.summaryText=document.getElementById('summary-text').innerHTML;
+  d.oq=tblCapture('oq-table',1);
   // tracker
-  d.phases = [...document.querySelectorAll('#phase-board .phase-row')].map(r=>{
-    const inputs=[...r.querySelectorAll('input')]; const sel=r.querySelector('select');
-    return {name:inputs[0]?.value||'',status:sel?.value||'todo',owner:inputs[1]?.value||'',due:inputs[2]?.value||''};
+  d.phases=[...document.querySelectorAll('#phase-board .phase-row')].map(r=>{
+    const ins=[...r.querySelectorAll('input')];const sel=r.querySelector('select');
+    return{name:ins[0]?.value||'',status:sel?.value||'todo',owner:ins[1]?.value||'',due:ins[2]?.value||''};
   });
-  d.blockerCards = [...document.querySelectorAll('#blocker-board .blocker-card')].map(c=>{
-    const inputs=[...c.querySelectorAll('input')]; const sels=[...c.querySelectorAll('select')];
-    return {priority:sels[0]?.value||'p2',desc:inputs[0]?.value||'',owner:inputs[1]?.value||'',raisedBy:inputs[2]?.value||'',status:sels[1]?.value||'open'};
+  d.trackerBlockers=[...document.querySelectorAll('#blocker-board .blocker-card')].map(c=>{
+    const ins=[...c.querySelectorAll('input')];const sels=[...c.querySelectorAll('select')];
+    return{priority:sels[0]?.value||'p2',desc:ins[0]?.value||'',owner:ins[1]?.value||'',raisedBy:ins[2]?.value||'',status:sels[1]?.value||'open'};
   });
+  // scorecard
+  d.scType=currentScType;
+  d.scSourceEsp=document.getElementById('sc-source-esp').value;
+  d.scTargetEsp=document.getElementById('sc-target-esp').value;
+  d.scProfiles=document.getElementById('sc-profiles').value;
+  d.scCampCount=document.getElementById('sc-camp-count').value;
+  d.scTimeline=document.getElementById('sc-timeline').value;
+  d.scLead=document.getElementById('sc-lead').value;
+  d.scPricingNotes=document.getElementById('sc-pricing-notes').innerHTML;
+  d.scFactors=[...document.querySelectorAll('#sc-factor-board .sc-factor')].map(f=>({
+    name:f.querySelector('.sc-factor-name').value,note:f.querySelector('.sc-factor-note').value,rating:f.querySelector('.sc-rating').value,
+  }));
   return d;
 }
+function tblCapture(id,skip=0){return[...document.getElementById(id).querySelectorAll('tr')].slice(skip).map(r=>[...r.querySelectorAll('input,select')].map(i=>i.value));}
 
-function tblCapture(id, skip=0) {
-  return [...document.getElementById(id).querySelectorAll('tr')].slice(skip).map(r=>[...r.querySelectorAll('input,select')].map(i=>i.value));
-}
-
-// ── RESTORE ALL FIELDS ──
-function restore(d) {
-  if (!d) return;
-  if (d.heroSub)   document.getElementById('hero-sub').textContent = d.heroSub;
-  if (d.riskClass) document.getElementById('hero-risk-badge').className = d.riskClass;
-  if (d.riskText)  document.getElementById('hero-risk-badge').textContent = d.riskText;
-  ['metaEsp','metaWs','metaLead','metaCon'].forEach((k,i)=>{
-    const el = [document.getElementById('meta-esp'),document.getElementById('meta-workspace'),document.getElementById('meta-wmlead'),document.getElementById('meta-contact')][i];
-    if(el && d[k]!==undefined) el.value=d[k];
-  });
+// ══════════════════════════════════════════
+// RESTORE
+// ══════════════════════════════════════════
+function restore(d){
+  if(!d)return;
+  if(d.heroSub)document.getElementById('hero-sub').textContent=d.heroSub;
+  if(d.riskClass)document.getElementById('hero-risk-badge').className=d.riskClass;
+  if(d.riskText)document.getElementById('hero-risk-badge').textContent=d.riskText;
+  const mf={metaEsp:'meta-esp',metaWs:'meta-workspace',metaLead:'meta-wmlead',metaCon:'meta-contact'};
+  Object.entries(mf).forEach(([k,id])=>{if(d[k]!==undefined)document.getElementById(id).value=d[k];});
   ['profiles','campaigns','attributes','events','blockers'].forEach(k=>{
-    if(d['s_'+k]!==undefined) document.getElementById('stat-'+k).value=d['s_'+k];
-    if(d['s_'+k+'b']!==undefined) document.getElementById('stat-'+k+'-sub').value=d['s_'+k+'b'];
+    if(d['s_'+k]!==undefined)document.getElementById('stat-'+k).value=d['s_'+k];
+    if(d['s_'+k+'b']!==undefined)document.getElementById('stat-'+k+'-sub').value=d['s_'+k+'b'];
   });
-  if(d.scopeNotes!==undefined) document.getElementById('scope-notes').innerHTML=d.scopeNotes;
-  if(d.contacts) tblRestore('contacts-table',d.contacts);
-  if(d.flags)    tblRestore('flags-table',d.flags);
-  if(d.chips) document.querySelectorAll('#esp-chips .chip').forEach(c=>c.classList.toggle('selected',d.chips.includes(c.textContent)));
+  if(d.scopeNotes!==undefined)document.getElementById('scope-notes').innerHTML=d.scopeNotes;
+  if(d.contacts)tblRestore('contacts-table',d.contacts);
+  if(d.flags)tblRestore('flags-table',d.flags);
+  if(d.chips)document.querySelectorAll('#esp-chips .chip').forEach(c=>c.classList.toggle('selected',d.chips.includes(c.textContent)));
   if(d.wsInputs){const ins=[...document.querySelectorAll('#page-workspace .ti, #page-workspace .til')];d.wsInputs.forEach((v,i)=>{if(ins[i])ins[i].value=v;});}
   if(d.wsNotes){const ns=[...document.querySelectorAll('#page-workspace .notes-body')];d.wsNotes.forEach((v,i)=>{if(ns[i])ns[i].innerHTML=v;});}
-  if(d.checklist){
-    const items=[...document.querySelectorAll('#page-checklist .check-item')];
-    d.checklist.forEach((s,i)=>{if(!items[i])return;applyState(items[i],s.state);});
-  }
-  if(d.riskSels){
-    const sels=[...document.querySelectorAll('#risk-grid .risk-selector')];
-    d.riskSels.forEach((v,i)=>{if(sels[i]){sels[i].value=v;sels[i].className='risk-selector '+(v||'');}});
-    calcRisk();
-  }
-  if(d.blockers){
-    const list=document.getElementById('blockers-list'); list.innerHTML='';
-    d.blockers.forEach(b=>{
-      const el=document.createElement('div'); el.className='check-item blocked';
-      el.innerHTML=`<div class="check-box">${icon('blocked')}</div><div class="check-content"><div class="check-title" contenteditable="true" style="outline:none" oninput="autoSave()">${b.title}</div><div class="check-desc" contenteditable="true" style="outline:none" oninput="autoSave()">${b.desc}</div><div class="check-meta"><span class="check-owner" contenteditable="true" style="outline:none" oninput="autoSave()">${b.owner}</span></div></div><span class="check-status status-block">Blocked</span>`;
-      list.appendChild(el);
-    });
-  }
-  const rn=document.querySelector('#page-risk .notes-body'); if(rn&&d.riskNotes!==undefined)rn.innerHTML=d.riskNotes;
-  if(d.summaryText!==undefined) document.getElementById('summary-text').innerHTML=d.summaryText;
-  if(d.oq) tblRestore('oq-table',d.oq,1);
-  // tracker restore
-  if(d.phases) {
-    const board=document.getElementById('phase-board'); board.innerHTML='';
-    d.phases.forEach(p=>board.appendChild(makePhaseRow(p)));
-  }
-  if(d.blockerCards) {
-    const board=document.getElementById('blocker-board'); board.innerHTML='';
-    d.blockerCards.forEach(b=>board.appendChild(makeBlockerCard(b)));
-  }
+  if(d.checklist){const items=[...document.querySelectorAll('#page-checklist .check-item')];d.checklist.forEach((s,i)=>{if(!items[i])return;applyState(items[i],s.state);});}
+  if(d.riskSels){const sels=[...document.querySelectorAll('#risk-grid .risk-selector')];d.riskSels.forEach((v,i)=>{if(sels[i]){sels[i].value=v;sels[i].className='risk-selector '+(v||'');}});calcRisk();}
+  if(d.riskBlockers){const list=document.getElementById('blockers-list');list.innerHTML='';d.riskBlockers.forEach(b=>{const el=document.createElement('div');el.className='check-item blocked';el.innerHTML=`<div class="check-box">${icon('blocked')}</div><div class="check-content"><div class="check-title" contenteditable="true" style="outline:none" oninput="autoSave()">${b.title}</div><div class="check-desc" contenteditable="true" style="outline:none" oninput="autoSave()">${b.desc}</div><div class="check-meta"><span class="check-owner" contenteditable="true" style="outline:none" oninput="autoSave()">${b.owner}</span></div></div><span class="check-status status-block">Blocked</span>`;list.appendChild(el);});}
+  const rn=document.querySelector('#page-risk .notes-body');if(rn&&d.riskNotes!==undefined)rn.innerHTML=d.riskNotes;
+  if(d.summaryText!==undefined)document.getElementById('summary-text').innerHTML=d.summaryText;
+  if(d.oq)tblRestore('oq-table',d.oq,1);
+  // tracker
+  if(d.phases){const b=document.getElementById('phase-board');b.innerHTML='';d.phases.forEach(p=>b.appendChild(makePhaseRow(p)));}
+  else initDefaultPhases();
+  if(d.trackerBlockers){const b=document.getElementById('blocker-board');b.innerHTML='';d.trackerBlockers.forEach(bl=>b.appendChild(makeBlockerCard(bl)));}
+  else initDefaultBlockerCard();
+  // scorecard
+  if(d.scType){currentScType=d.scType;document.querySelectorAll('[id^=sc-nav-]').forEach(n=>n.classList.remove('active'));const nav=document.getElementById('sc-nav-'+d.scType);if(nav)nav.classList.add('active');}
+  const sf={scSourceEsp:'sc-source-esp',scTargetEsp:'sc-target-esp',scProfiles:'sc-profiles',scCampCount:'sc-camp-count',scTimeline:'sc-timeline',scLead:'sc-lead'};
+  Object.entries(sf).forEach(([k,id])=>{if(d[k]!==undefined)document.getElementById(id).value=d[k];});
+  if(d.scPricingNotes!==undefined)document.getElementById('sc-pricing-notes').innerHTML=d.scPricingNotes;
+  if(d.scFactors)buildScorecardFactors(d.scFactors);
+  else buildScorecardFactors(SC_FACTORS[currentScType].map(f=>({...f,rating:''})));
+  calcScore();
   updateProgress();
 }
+function tblRestore(id,data,skip=0){const rows=[...document.getElementById(id).querySelectorAll('tr')].slice(skip);data.forEach((row,ri)=>{if(!rows[ri])return;const fields=rows[ri].querySelectorAll('input,select');row.forEach((v,fi)=>{if(fields[fi])fields[fi].value=v;});});}
 
-function tblRestore(id, data, skip=0) {
-  const rows=[...document.getElementById(id).querySelectorAll('tr')].slice(skip);
-  data.forEach((row,ri)=>{
-    if(!rows[ri])return;
-    const fields=rows[ri].querySelectorAll('input,select');
-    row.forEach((v,fi)=>{if(fields[fi])fields[fi].value=v;});
-  });
-}
-
-// ── CLIENT MANAGEMENT ──
-function genId(){ return 'c'+Date.now()+'_'+Math.random().toString(36).slice(2,6); }
-
-function openNewClientModal(){
-  ['f-name','f-industry','f-location','f-wmlead','f-contact'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-esp').value='';
-  document.getElementById('f-risk').value='med';
-  document.getElementById('new-client-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('f-name').focus(),100);
-}
-
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+// ══════════════════════════════════════════
+// CLIENT MANAGEMENT
+// ══════════════════════════════════════════
+function genId(){return'c'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
+function openNewClientModal(){['f-name','f-industry','f-location','f-wmlead','f-contact'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-esp').value='';document.getElementById('f-risk').value='med';document.getElementById('new-client-modal').classList.add('open');setTimeout(()=>document.getElementById('f-name').focus(),100);}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
 function createClient(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){toast('Client name is required');return;}
   const id=genId();
-  clients[id]={id,name,
-    industry:document.getElementById('f-industry').value.trim(),
-    location:document.getElementById('f-location').value.trim(),
-    esp:document.getElementById('f-esp').value,
-    risk:document.getElementById('f-risk').value,
-    wmlead:document.getElementById('f-wmlead').value.trim(),
-    contact:document.getElementById('f-contact').value.trim(),
-    intakeDate:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-    createdAt:Date.now(), data:null
-  };
-  save(); closeModal('new-client-modal'); renderClientList(); loadClient(id);
-  toast('Intake started for '+name);
+  clients[id]={id,name,industry:document.getElementById('f-industry').value.trim(),location:document.getElementById('f-location').value.trim(),esp:document.getElementById('f-esp').value,risk:document.getElementById('f-risk').value,wmlead:document.getElementById('f-wmlead').value.trim(),contact:document.getElementById('f-contact').value.trim(),intakeDate:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),createdAt:Date.now(),data:null};
+  save();closeModal('new-client-modal');renderAllDropdowns();loadClient(id);toast('Intake started for '+name);
 }
 
 function loadClient(id){
   if(!clients[id])return;
-  activeId=id; localStorage.setItem(AK,id);
+  activeId=id;localStorage.setItem(AK,id);
   const c=clients[id];
   resetDash();
   document.getElementById('empty-screen').style.display='none';
@@ -981,8 +1008,8 @@ function loadClient(id){
   document.getElementById('summary-client-name').textContent=c.name;
   const badge=document.getElementById('hero-risk-badge');
   const rm={high:['risk-high','HIGH RISK'],med:['risk-med','MED RISK'],low:['risk-low','LOW RISK']};
-  const[cls,txt]=rm[c.risk]||rm.med; badge.className='risk-badge '+cls; badge.textContent=txt;
-  if(c.data) restore(c.data);
+  const[cls,txt]=rm[c.risk]||rm.med;badge.className='risk-badge '+cls;badge.textContent=txt;
+  if(c.data)restore(c.data);
   else{
     document.getElementById('meta-esp').value=c.esp||'';
     document.getElementById('meta-wmlead').value=c.wmlead||'';
@@ -990,7 +1017,7 @@ function loadClient(id){
     document.getElementById('hero-sub').textContent=[c.industry,c.location,c.esp].filter(Boolean).join(' · ')||'Industry · Location · Platform';
   }
   showPage('overview',document.querySelector('#nav-section .nav-item'));
-  renderClientList(); updateProgress();
+  renderAllDropdowns();updateProgress();
 }
 
 function promptDeleteActive(){
@@ -1003,93 +1030,85 @@ function promptDeleteActive(){
 
 function confirmDelete(id){
   const wasActive=(activeId===id);
-  delete clients[id]; save(); closeModal('confirm-modal'); renderClientList();
+  delete clients[id];save();closeModal('confirm-modal');renderAllDropdowns();
   if(wasActive){
     activeId=null;
     document.getElementById('empty-screen').style.display='';
     document.getElementById('dashboard').style.display='none';
     document.getElementById('nav-section').style.display='none';
     document.getElementById('progress-section').style.display='none';
-    const ids=Object.keys(clients);
-    if(ids.length) loadClient(ids[ids.length-1]);
+    const ids=Object.keys(clients);if(ids.length)loadClient(ids[ids.length-1]);
   }
   toast('Client deleted');
 }
 
-function renderClientList(){
-  const dd = document.getElementById('client-dropdown');
-  const msg = document.getElementById('no-clients-msg');
-  const delBtn = document.getElementById('delete-client-btn');
-  // save scroll
-  const ids = Object.keys(clients).sort((a,b)=>(clients[b].createdAt||0)-(clients[a].createdAt||0));
-  // rebuild options
-  while(dd.options.length > 1) dd.remove(1);
-  if(!ids.length){
-    msg.style.display='block';
-    dd.style.display='none';
-    delBtn.style.display='none';
-    return;
-  }
-  msg.style.display='none';
-  dd.style.display='block';
-  ids.forEach(id=>{
-    const c=clients[id];
-    const risk={high:'▲ HIGH',med:'◆ MED',low:'▼ LOW',none:''}[c.risk||'none']||'';
-    const opt=document.createElement('option');
-    opt.value=id;
-    opt.textContent=`${c.name}${risk?' — '+risk:''}`;
-    if(id===activeId) opt.selected=true;
-    dd.appendChild(opt);
+function renderAllDropdowns(){
+  const ids=Object.keys(clients).sort((a,b)=>(clients[b].createdAt||0)-(clients[a].createdAt||0));
+  ['client-dropdown','tracker-dropdown','scorecard-dropdown'].forEach(ddId=>{
+    const dd=document.getElementById(ddId);
+    while(dd.options.length>1)dd.remove(1);
+    ids.forEach(id=>{
+      const c=clients[id],risk={high:'▲ HIGH',med:'◆ MED',low:'▼ LOW',none:''}[c.risk||'none']||'';
+      const opt=document.createElement('option');opt.value=id;opt.textContent=`${c.name}${risk?' — '+risk:''}`;
+      if(id===activeId)opt.selected=true;dd.appendChild(opt);
+    });
   });
-  delBtn.style.display = activeId ? 'block' : 'none';
+  const hasClients=ids.length>0;
+  document.getElementById('no-clients-msg').style.display=hasClients?'none':'block';
+  document.getElementById('client-dropdown').style.display=hasClients?'block':'none';
+  document.getElementById('delete-client-btn').style.display=activeId?'block':'none';
 }
 
-function onClientDropdownChange(sel){
-  const id = sel.value;
-  if(id) loadClient(id);
-}
+function onClientDropdownChange(sel){if(sel.value)loadClient(sel.value);}
+function onTrackerDropdownChange(sel){if(sel.value)loadClient(sel.value);}
+function onScorecardDropdownChange(sel){if(sel.value)loadClient(sel.value);}
 
-// ── RESET ──
+// ══════════════════════════════════════════
+// RESET
+// ══════════════════════════════════════════
 function resetDash(){
   document.querySelectorAll('#dashboard input').forEach(i=>i.value='');
   document.querySelectorAll('#dashboard select').forEach(s=>s.selectedIndex=0);
-  document.querySelectorAll('#dashboard [contenteditable]').forEach(el=>{
-    if(!['check-title','check-desc','check-owner'].some(c=>el.classList.contains(c))) el.innerHTML='';
-  });
+  document.querySelectorAll('#dashboard [contenteditable]').forEach(el=>{if(!['check-title','check-desc','check-owner'].some(c=>el.classList.contains(c)))el.innerHTML='';});
   document.getElementById('summary-text').innerHTML=`WORKSPACE OVERVIEW\n[Describe what you found.]\n\nWHAT WE'VE COMPLETED\n✓ [Item]\n\nWHAT'S IN PROGRESS\n→ [Item]\n\nWHAT'S BLOCKED — ACTION NEEDED FROM YOU\n🔴 [Blocker]\n\nWHAT'S COMING NEXT\n[Next milestones.]`;
   document.querySelectorAll('#esp-chips .chip').forEach(c=>c.classList.remove('selected'));
   document.querySelectorAll('#page-checklist .check-item').forEach(el=>applyState(el,''));
   document.querySelectorAll('#risk-grid .risk-selector').forEach(s=>{s.value='';s.className='risk-selector';});
-  document.getElementById('overall-risk').textContent='—'; document.getElementById('overall-risk').className='';
+  document.getElementById('overall-risk').textContent='—';document.getElementById('overall-risk').style.color='var(--text-tertiary)';
   document.getElementById('blockers-list').innerHTML=`<div class="check-item blocked"><div class="check-box">${icon('blocked')}</div><div class="check-content"><div class="check-title" contenteditable="true" style="outline:none" oninput="autoSave()">Click to edit blocker description</div><div class="check-desc" contenteditable="true" style="outline:none" oninput="autoSave()">What exactly needs to happen to resolve this?</div><div class="check-meta"><span class="check-owner" contenteditable="true" style="outline:none" oninput="autoSave()">Owner: —</span></div></div><span class="check-status status-block">Blocked</span></div>`;
-  document.getElementById('hero-risk-badge').className='risk-badge risk-med';
-  document.getElementById('hero-risk-badge').textContent='MED RISK';
+  document.getElementById('hero-risk-badge').className='risk-badge risk-med';document.getElementById('hero-risk-badge').textContent='MED RISK';
   document.querySelectorAll('#page-workspace .tab').forEach((t,i)=>t.classList.toggle('active',i===0));
   document.querySelectorAll('#page-workspace .tab-content').forEach((c,i)=>c.classList.toggle('active',i===0));
-  // reset tracker
-  const pb = document.getElementById('phase-board'); pb.innerHTML='';
-  [{name:'Week 1 — Workspace audit',status:'todo'},{name:'Week 2 — Data cleanup plan',status:'todo'},{name:'Week 3 — Client sign-offs',status:'todo'},{name:'Week 4 — Migration execution',status:'todo'}].forEach(p=>pb.appendChild(makePhaseRow(p)));
-  const bb = document.getElementById('blocker-board'); bb.innerHTML='';
-  bb.appendChild(makeBlockerCard({priority:'p0',status:'open'}));
-  document.getElementById('update-text').textContent='Click "Regenerate" to generate the weekly update email from your current phases and blockers.';
+  initDefaultPhases();initDefaultBlockerCard();
+  currentScType='migration';
+  document.querySelectorAll('[id^=sc-nav-]').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sc-nav-migration').classList.add('active');
+  ['sc-source-esp','sc-target-esp','sc-profiles','sc-camp-count','sc-timeline','sc-lead'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sc-pricing-notes').innerHTML='';
+  buildScorecardFactors(SC_FACTORS.migration.map(f=>({...f,rating:''})));
+  setScoreTier('none');document.getElementById('sc-export-preview').textContent='';
+  document.getElementById('update-text').textContent='Click "Regenerate" to build the weekly update.';
   updateProgress();
 }
 
-// ── NAV ──
+// ══════════════════════════════════════════
+// PAGE / TAB NAV
+// ══════════════════════════════════════════
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('#nav-section .nav-item').forEach(n=>n.classList.remove('active'));
-  const p=document.getElementById('page-'+id); if(p)p.classList.add('active');
+  const p=document.getElementById('page-'+id);if(p)p.classList.add('active');
   if(el)el.classList.add('active');
 }
 function switchTab(el,tabId){
-  el.closest('.tab-bar').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
+  el.closest('.tab-bar').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
   el.closest('.page').querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-  const tc=document.getElementById(tabId); if(tc)tc.classList.add('active');
+  const tc=document.getElementById(tabId);if(tc)tc.classList.add('active');
 }
 
-// ── CHECKLIST ──
+// ══════════════════════════════════════════
+// CHECKLIST
+// ══════════════════════════════════════════
 const STATES=['','checked','flagged','blocked'];
 const ST_TXT=['Not started','Done','In progress','Blocked'];
 const ST_CLS=['status-pend','status-done','status-warn','status-block'];
@@ -1099,228 +1118,139 @@ function icon(s){
   if(s==='flagged')return`<svg class="check-icon" viewBox="0 0 12 12"><line x1="6" y1="2" x2="6" y2="7" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="6" cy="9.5" r="1" fill="white"/></svg>`;
   return'';
 }
-function applyState(el,state){
-  el.classList.remove('checked','flagged','blocked');
-  if(state)el.classList.add(state);
-  el.querySelector('.check-box').innerHTML=icon(state);
-  const idx=STATES.indexOf(state); const i=Math.max(0,idx);
-  const st=el.querySelector('.check-status');
-  st.className='check-status '+ST_CLS[i]; st.textContent=ST_TXT[i];
-}
-function toggleCheck(el){
-  const cur=STATES.find(s=>s&&el.classList.contains(s))||'';
-  applyState(el,STATES[(STATES.indexOf(cur)+1)%STATES.length]);
-  updateProgress(); autoSave();
-}
-function updateProgress(){
-  const all=document.querySelectorAll('#page-checklist .check-item');
-  const done=document.querySelectorAll('#page-checklist .check-item.checked');
-  const pct=all.length?Math.round((done.length/all.length)*100):0;
-  document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('progress-pct').textContent=pct+'%';
-  document.getElementById('progress-sub').textContent=done.length+' of '+all.length+' items';
-}
-function showAddCheckForm(){
-  const f=document.getElementById('add-check-form');
-  f.style.display=f.style.display==='flex'?'none':'flex';
-  if(f.style.display==='flex')document.getElementById('new-check-title').focus();
-}
-function saveNewCheckItem(){
-  const title=document.getElementById('new-check-title').value.trim();
-  if(!title){toast('Please enter a title');return;}
-  const desc=document.getElementById('new-check-desc').value.trim();
-  const owner=document.getElementById('new-check-owner').value.trim();
-  const el=document.createElement('div');
-  el.className='check-item'; el.dataset.custom='1'; el.setAttribute('onclick','toggleCheck(this)');
-  el.innerHTML=`<div class="check-box"></div><div class="check-content"><div class="check-title">${title}</div>${desc?`<div class="check-desc">${desc}</div>`:''}<div class="check-meta"><span class="check-owner">Owner: ${owner||'—'}</span></div></div><span class="check-status status-pend">Not started</span>`;
-  document.getElementById('cl-governance').appendChild(el);
-  ['new-check-title','new-check-desc','new-check-owner'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('add-check-form').style.display='none';
-  updateProgress(); autoSave(); toast('Item added');
-}
+function applyState(el,state){el.classList.remove('checked','flagged','blocked');if(state)el.classList.add(state);el.querySelector('.check-box').innerHTML=icon(state);const idx=STATES.indexOf(state);const i=Math.max(0,idx);const st=el.querySelector('.check-status');st.className='check-status '+ST_CLS[i];st.textContent=ST_TXT[i];}
+function toggleCheck(el){const cur=STATES.find(s=>s&&el.classList.contains(s))||'';applyState(el,STATES[(STATES.indexOf(cur)+1)%STATES.length]);updateProgress();autoSave();}
+function updateProgress(){const all=document.querySelectorAll('#page-checklist .check-item');const done=document.querySelectorAll('#page-checklist .check-item.checked');const pct=all.length?Math.round((done.length/all.length)*100):0;document.getElementById('progress-fill').style.width=pct+'%';document.getElementById('progress-pct').textContent=pct+'%';document.getElementById('progress-sub').textContent=done.length+' of '+all.length+' items';}
+function showAddCheckForm(){const f=document.getElementById('add-check-form');f.style.display=f.style.display==='flex'?'none':'flex';if(f.style.display==='flex')document.getElementById('new-check-title').focus();}
+function saveNewCheckItem(){const title=document.getElementById('new-check-title').value.trim();if(!title){toast('Please enter a title');return;}const desc=document.getElementById('new-check-desc').value.trim();const owner=document.getElementById('new-check-owner').value.trim();const el=document.createElement('div');el.className='check-item';el.dataset.custom='1';el.setAttribute('onclick','toggleCheck(this)');el.innerHTML=`<div class="check-box"></div><div class="check-content"><div class="check-title">${title}</div>${desc?`<div class="check-desc">${desc}</div>`:''}<div class="check-meta"><span class="check-owner">Owner: ${owner||'—'}</span></div></div><span class="check-status status-pend">Not started</span>`;document.getElementById('cl-governance').appendChild(el);['new-check-title','new-check-desc','new-check-owner'].forEach(id=>document.getElementById(id).value='');document.getElementById('add-check-form').style.display='none';updateProgress();autoSave();toast('Item added');}
 
-// ── RISK ──
-function updateRisk(sel){ sel.className='risk-selector '+(sel.value||''); calcRisk(); autoSave(); }
-function calcRisk(){
-  const vals=[...document.querySelectorAll('#risk-grid .risk-selector')].map(s=>s.value).filter(Boolean);
-  const highs=vals.filter(v=>v==='high').length, meds=vals.filter(v=>v==='med').length;
-  let txt='—',cls='',key='none';
-  if(highs>=2){txt='HIGH';cls='';document.getElementById('overall-risk').style.color='#EF4444';key='high';}
-  else if(highs===1||meds>=3){txt='MEDIUM';document.getElementById('overall-risk').style.color='#F59E0B';key='med';}
-  else if(vals.length>=3){txt='LOW';document.getElementById('overall-risk').style.color='#22C55E';key='low';}
-  else document.getElementById('overall-risk').style.color='var(--text-tertiary)';
-  document.getElementById('overall-risk').textContent=txt;
-  const badge=document.getElementById('hero-risk-badge');
-  const rm={high:['risk-high','HIGH RISK'],med:['risk-med','MED RISK'],low:['risk-low','LOW RISK']};
-  if(rm[key]){const[c,t]=rm[key];badge.className='risk-badge '+c;badge.textContent=t;}
-  if(activeId&&clients[activeId])clients[activeId].risk=key;
-}
-function cycleRisk(){
-  const badge=document.getElementById('hero-risk-badge');
-  const cycle=[['risk-high','HIGH RISK','high'],['risk-med','MED RISK','med'],['risk-low','LOW RISK','low']];
-  const cur=cycle.findIndex(([c])=>badge.classList.contains(c));
-  const[c,t,k]=cycle[(cur+1)%3]; badge.className='risk-badge '+c; badge.textContent=t;
-  if(activeId&&clients[activeId])clients[activeId].risk=k;
-  autoSave();
-}
+// ══════════════════════════════════════════
+// RISK ASSESSMENT
+// ══════════════════════════════════════════
+function updateRisk(sel){sel.className='risk-selector '+(sel.value||'');calcRisk();autoSave();}
+function calcRisk(){const vals=[...document.querySelectorAll('#risk-grid .risk-selector')].map(s=>s.value).filter(Boolean);const highs=vals.filter(v=>v==='high').length,meds=vals.filter(v=>v==='med').length;let txt='—',key='none';const el=document.getElementById('overall-risk');if(highs>=2){txt='HIGH';el.style.color='#EF4444';key='high';}else if(highs===1||meds>=3){txt='MEDIUM';el.style.color='#F59E0B';key='med';}else if(vals.length>=3){txt='LOW';el.style.color='#22C55E';key='low';}else el.style.color='var(--text-tertiary)';el.textContent=txt;const badge=document.getElementById('hero-risk-badge');const rm={high:['risk-high','HIGH RISK'],med:['risk-med','MED RISK'],low:['risk-low','LOW RISK']};if(rm[key]){const[c,t]=rm[key];badge.className='risk-badge '+c;badge.textContent=t;}if(activeId&&clients[activeId])clients[activeId].risk=key;}
+function cycleRisk(){const badge=document.getElementById('hero-risk-badge');const cycle=[['risk-high','HIGH RISK','high'],['risk-med','MED RISK','med'],['risk-low','LOW RISK','low']];const cur=cycle.findIndex(([c])=>badge.classList.contains(c));const[c,t,k]=cycle[(cur+1)%3];badge.className='risk-badge '+c;badge.textContent=t;if(activeId&&clients[activeId])clients[activeId].risk=k;autoSave();}
 
-// ── ADD ROWS ──
+// ══════════════════════════════════════════
+// ADD ROWS
+// ══════════════════════════════════════════
 function addContact(){const r=document.getElementById('contacts-table').insertRow();r.innerHTML=`<td><input class="til" placeholder="Name" oninput="autoSave()"></td><td><input class="ti" placeholder="Role / Org" oninput="autoSave()"></td>`;}
 function addFlag(){const r=document.getElementById('flags-table').insertRow();r.innerHTML=`<td><input class="til" placeholder="Issue or observation" oninput="autoSave()"></td><td><select class="ti" style="cursor:pointer" onchange="autoSave()"><option value="high">🔴 High</option><option value="med">🟡 Med</option><option value="low">🟢 Low</option></select></td>`;}
-function addBlocker(){
-  const el=document.createElement('div'); el.className='check-item blocked';
-  el.innerHTML=`<div class="check-box">${icon('blocked')}</div><div class="check-content"><div class="check-title" contenteditable="true" style="outline:none" oninput="autoSave()">Blocker description</div><div class="check-desc" contenteditable="true" style="outline:none" oninput="autoSave()">What needs to happen to resolve this?</div><div class="check-meta"><span class="check-owner" contenteditable="true" style="outline:none" oninput="autoSave()">Owner: —</span></div></div><span class="check-status status-block">Blocked</span>`;
-  document.getElementById('blockers-list').appendChild(el); el.querySelector('.check-title').focus(); autoSave();
-}
+function addBlocker(){const el=document.createElement('div');el.className='check-item blocked';el.innerHTML=`<div class="check-box">${icon('blocked')}</div><div class="check-content"><div class="check-title" contenteditable="true" style="outline:none" oninput="autoSave()">Blocker description</div><div class="check-desc" contenteditable="true" style="outline:none" oninput="autoSave()">What needs to happen to resolve this?</div><div class="check-meta"><span class="check-owner" contenteditable="true" style="outline:none" oninput="autoSave()">Owner: —</span></div></div><span class="check-status status-block">Blocked</span>`;document.getElementById('blockers-list').appendChild(el);el.querySelector('.check-title').focus();autoSave();}
 function addOpenQuestion(){const r=document.getElementById('oq-table').insertRow();r.innerHTML=`<td><input class="til" placeholder="What open question needs an answer?" oninput="autoSave()"></td><td><input class="ti" placeholder="Owner — by when" oninput="autoSave()"></td>`;}
+function toggleChip(el){el.classList.toggle('selected');document.getElementById('meta-esp').value=[...document.querySelectorAll('#esp-chips .chip.selected')].map(c=>c.textContent).join(', ')||'';autoSave();}
+function copySummary(){navigator.clipboard.writeText(document.getElementById('summary-text').innerText).then(()=>toast('Summary copied'));}
 
-// ── PROJECT TRACKER ──
-function makePhaseRow(p={}) {
-  const stMap = {todo:'st-todo',active:'st-active',done:'st-done',blocked:'st-blocked'};
-  const rowCls = {todo:'',active:'ph-active',done:'ph-done',blocked:'ph-blocked'}[p.status||'todo']||'';
-  const el = document.createElement('div');
-  el.className = 'phase-row '+ rowCls;
-  el.innerHTML = `
-    <span class="phase-handle">⠿</span>
-    <input class="phase-name" placeholder="Phase name" value="${p.name||''}" oninput="autoSave()">
-    <select class="phase-status ${stMap[p.status||'todo']||'st-todo'}" onchange="phaseStatusChange(this);autoSave()">
-      <option value="todo"${p.status==='todo'?' selected':''}>Not started</option>
-      <option value="active"${p.status==='active'?' selected':''}>In progress</option>
-      <option value="done"${p.status==='done'?' selected':''}>Done</option>
-      <option value="blocked"${p.status==='blocked'?' selected':''}>Blocked</option>
-    </select>
-    <input class="phase-input" placeholder="Owner" value="${p.owner||''}" oninput="autoSave()">
-    <input class="phase-input" placeholder="Due date" value="${p.due||''}" oninput="autoSave()">
-    <button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>`;
+// ══════════════════════════════════════════
+// PROJECT TRACKER
+// ══════════════════════════════════════════
+function initDefaultPhases(){const b=document.getElementById('phase-board');b.innerHTML='';[{name:'Week 1 — Workspace audit',status:'todo'},{name:'Week 2 — Data cleanup plan',status:'todo'},{name:'Week 3 — Client sign-offs',status:'todo'},{name:'Week 4 — Migration execution',status:'todo'}].forEach(p=>b.appendChild(makePhaseRow(p)));}
+function initDefaultBlockerCard(){const b=document.getElementById('blocker-board');b.innerHTML='';b.appendChild(makeBlockerCard({priority:'p0',status:'open'}));}
+
+function makePhaseRow(p={}){
+  const stM={todo:'st-todo',active:'st-active',done:'st-done',blocked:'st-blocked'};
+  const rC={todo:'',active:'ph-active',done:'ph-done',blocked:'ph-blocked'}[p.status||'todo']||'';
+  const el=document.createElement('div');el.className='phase-row '+rC;
+  el.innerHTML=`<span class="phase-handle">⠿</span><input class="phase-name" placeholder="Phase name" value="${p.name||''}" oninput="autoSave()"><select class="phase-status ${stM[p.status||'todo']||'st-todo'}" onchange="phaseStatusChange(this);autoSave()"><option value="todo"${p.status==='todo'?' selected':''}>Not started</option><option value="active"${p.status==='active'?' selected':''}>In progress</option><option value="done"${p.status==='done'?' selected':''}>Done</option><option value="blocked"${p.status==='blocked'?' selected':''}>Blocked</option></select><input class="phase-input" placeholder="Owner" value="${p.owner||''}" oninput="autoSave()"><input class="phase-input" placeholder="Due date" value="${p.due||''}" oninput="autoSave()"><button class="phase-del" onclick="this.closest('.phase-row').remove();autoSave()">×</button>`;
   return el;
 }
+function addPhase(){document.getElementById('phase-board').appendChild(makePhaseRow({status:'todo'}));autoSave();}
+function phaseStatusChange(sel){const row=sel.closest('.phase-row');row.classList.remove('ph-active','ph-done','ph-blocked');const cM={active:'ph-active',done:'ph-done',blocked:'ph-blocked'};if(cM[sel.value])row.classList.add(cM[sel.value]);sel.className='phase-status '+({todo:'st-todo',active:'st-active',done:'st-done',blocked:'st-blocked'}[sel.value]||'st-todo');}
 
-function addPhase() {
-  document.getElementById('phase-board').appendChild(makePhaseRow({status:'todo'}));
-  autoSave();
-}
-
-function phaseStatusChange(sel) {
-  const row = sel.closest('.phase-row');
-  row.classList.remove('ph-active','ph-done','ph-blocked');
-  const clsMap = {active:'ph-active',done:'ph-done',blocked:'ph-blocked'};
-  if(clsMap[sel.value]) row.classList.add(clsMap[sel.value]);
-  sel.className = 'phase-status '+({todo:'st-todo',active:'st-active',done:'st-done',blocked:'st-blocked'}[sel.value]||'st-todo');
-}
-
-function makeBlockerCard(b={}) {
-  const priCls = {p0:'bp0',p1:'bp1',p2:'bp2'}[b.priority||'p2']||'bp2';
-  const stCls  = {open:'st-blocked',inprog:'st-warn',resolved:'st-done'}[b.status||'open']||'st-blocked';
-  const stOpts = ['open','inprog','resolved'];
-  const stLabels = {open:'Open',inprog:'In progress',resolved:'Resolved'};
-  const priOpts = ['p0','p1','p2'];
-  const priLabels = {'p0':'P0 — Critical','p1':'P1 — High','p2':'P2 — Monitor'};
-  const card = document.createElement('div');
-  card.className = `blocker-card ${priCls}${b.status==='resolved'?' bc-resolved':''}`;
-  card.innerHTML = `
-    <select class="bl-priority ${priCls}" onchange="blockerPriorityChange(this);autoSave()">
-      ${priOpts.map(v=>`<option value="${v}"${b.priority===v?' selected':''}>${priLabels[v]}</option>`).join('')}
-    </select>
-    <input class="phase-input" style="font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-primary)" placeholder="Describe the blocker" value="${b.desc||''}" oninput="autoSave()">
-    <input class="phase-input" placeholder="Owner" value="${b.owner||''}" oninput="autoSave()">
-    <input class="phase-input" placeholder="Raised by" value="${b.raisedBy||''}" oninput="autoSave()">
-    <select class="phase-status ${stCls}" onchange="blockerStatusChange(this);autoSave()">
-      ${stOpts.map(v=>`<option value="${v}"${b.status===v?' selected':''}>${stLabels[v]}</option>`).join('')}
-    </select>
-    <button class="phase-del" onclick="this.closest('.blocker-card').remove();autoSave()">×</button>`;
+function makeBlockerCard(b={}){
+  const pC={p0:'bp0',p1:'bp1',p2:'bp2'}[b.priority||'p2']||'bp2';
+  const sC={open:'st-blocked',inprog:'st-warn',resolved:'st-done'}[b.status||'open']||'st-blocked';
+  const card=document.createElement('div');card.className=`blocker-card ${pC}${b.status==='resolved'?' bc-resolved':''}`;
+  card.innerHTML=`<select class="bl-priority ${pC}" onchange="blockerPriorityChange(this);autoSave()"><option value="p0"${b.priority==='p0'?' selected':''}>P0 — Critical</option><option value="p1"${b.priority==='p1'?' selected':''}>P1 — High</option><option value="p2"${b.priority==='p2'?' selected':''}>P2 — Monitor</option></select><input class="phase-input" style="font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-primary)" placeholder="Describe the blocker" value="${b.desc||''}" oninput="autoSave()"><input class="phase-input" placeholder="Owner" value="${b.owner||''}" oninput="autoSave()"><input class="phase-input" placeholder="Raised by" value="${b.raisedBy||''}" oninput="autoSave()"><select class="phase-status ${sC}" onchange="blockerStatusChange(this);autoSave()"><option value="open"${b.status==='open'?' selected':''}>Open</option><option value="inprog"${b.status==='inprog'?' selected':''}>In progress</option><option value="resolved"${b.status==='resolved'?' selected':''}>Resolved</option></select><button class="phase-del" onclick="this.closest('.blocker-card').remove();autoSave()">×</button>`;
   return card;
 }
+function addBlockerCard(){document.getElementById('blocker-board').appendChild(makeBlockerCard({priority:'p1',status:'open'}));autoSave();}
+function blockerPriorityChange(sel){const c=sel.closest('.blocker-card');c.classList.remove('bp0','bp1','bp2');c.classList.add(sel.value);sel.className='bl-priority '+sel.value;}
+function blockerStatusChange(sel){const c=sel.closest('.blocker-card');c.classList.toggle('bc-resolved',sel.value==='resolved');sel.className='phase-status '+({open:'st-blocked',inprog:'st-warn',resolved:'st-done'}[sel.value]||'st-blocked');}
 
-function addBlockerCard() {
-  document.getElementById('blocker-board').appendChild(makeBlockerCard({priority:'p1',status:'open'}));
-  autoSave();
+function generateUpdate(){
+  const name=activeId?clients[activeId].name:'Client';
+  const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const phRows=[...document.querySelectorAll('#phase-board .phase-row')];
+  const phDone=phRows.filter(r=>r.classList.contains('ph-done')).map(r=>`✓ ${r.querySelector('.phase-name').value}`).join('\n');
+  const phActive=phRows.filter(r=>r.classList.contains('ph-active')).map(r=>{const due=r.querySelectorAll('input')[2].value;return`→ ${r.querySelector('.phase-name').value}${due?' (due '+due+')':''}`;}).join('\n');
+  const phBlocked=phRows.filter(r=>r.classList.contains('ph-blocked')).map(r=>`🔴 ${r.querySelector('.phase-name').value}`).join('\n');
+  const phTodo=phRows.filter(r=>!r.classList.contains('ph-done')&&!r.classList.contains('ph-active')&&!r.classList.contains('ph-blocked')).map(r=>`○ ${r.querySelector('.phase-name').value}`).join('\n');
+  const bLines=[...document.querySelectorAll('#blocker-board .blocker-card')].filter(c=>!c.classList.contains('bc-resolved')).map(c=>{const pri=c.querySelector('.bl-priority').value.toUpperCase();const desc=c.querySelectorAll('input')[0].value||'Unnamed blocker';const owner=c.querySelectorAll('input')[1].value;return`${pri}: ${desc}${owner?' — Owner: '+owner:''}`;}).join('\n');
+  const txt=[`${name} × WM — Weekly Status Update`,date,'','── PHASES ──────────────────────────',phDone?'COMPLETED\n'+phDone:'',phActive?'IN PROGRESS\n'+phActive:'',phBlocked?'BLOCKED\n'+phBlocked:'',phTodo?'UPCOMING\n'+phTodo:'','','── OPEN BLOCKERS ───────────────────',bLines||'No open blockers 🎉'].filter(x=>x!==null&&x!=='').join('\n');
+  document.getElementById('update-text').textContent=txt;
 }
+function copyUpdate(){generateUpdate();setTimeout(()=>{navigator.clipboard.writeText(document.getElementById('update-text').textContent).then(()=>toast('Weekly update copied'));},50);}
 
-function blockerPriorityChange(sel) {
-  const card = sel.closest('.blocker-card');
-  card.classList.remove('bp0','bp1','bp2');
-  card.classList.add(sel.value);
-  sel.className = 'bl-priority '+sel.value;
+// ══════════════════════════════════════════
+// RISK SCORECARD
+// ══════════════════════════════════════════
+const SC_FACTORS={
+  migration:[{name:'Profile count & complexity'},{name:'Identifier consistency (email / UUID / custom ID)'},{name:'Number of active campaigns to migrate'},{name:'Campaign trigger type complexity'},{name:'SDK / data source count'},{name:'Data cleanliness (duplicates, stale records)'},{name:'Attribute naming consistency'},{name:'Client engineering availability'},{name:'Rollback feasibility'},{name:'Timeline constraints / blackout dates'},{name:'Irreversible actions required'},{name:'Client responsiveness & decision speed'}],
+  cleanup:[{name:'Profile duplication rate'},{name:'Attribute naming inconsistencies'},{name:'Stale / unused attributes & events'},{name:'Active campaigns affected by cleanup'},{name:'Client engineering involvement needed'},{name:'Sign-off process for irreversible actions'},{name:'Volume of records to modify'},{name:'Risk of breaking live sends'},{name:'Rollback feasibility'},{name:'Client responsiveness & decision speed'}],
+  setup:[{name:'Data migration volume'},{name:'Integration complexity (SDK, API, webhooks)'},{name:'Campaign build count & complexity'},{name:'Custom objects or advanced features needed'},{name:'Client technical maturity'},{name:'Data cleanliness of imported records'},{name:'Testing & QA requirements'},{name:'Timeline pressure'},{name:'Stakeholder alignment'},{name:'Training / handoff required'}],
+  audit:[{name:'Access level granted (Admin / Support / Author)'},{name:'Volume of data to review'},{name:'Documentation availability from client'},{name:'Complexity of existing setup'},{name:'Client responsiveness'},{name:'Scope creep risk'}],
+};
+const SC_RECS={
+  green:['Proceed with standard project structure.','Document any edge cases in the risk log.','Confirm sign-off process for any irreversible actions.'],
+  amber:['Add a 15–20% buffer on estimated hours.','Require written sign-off before each phase with irreversible actions.','Schedule a mid-project checkpoint to reassess risk.'],
+  red:['Add a 30–40% contingency buffer on estimated hours.','Require written sign-off and a documented rollback plan before proceeding.','Recommend a phased approach — do not execute all work in one pass.','Present risk tier to the client at kickoff and get explicit acknowledgment.','Consider a paid discovery phase before committing to full delivery.'],
+};
+
+function setScorecardType(type,el){
+  currentScType=type;
+  document.querySelectorAll('[id^=sc-nav-]').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  buildScorecardFactors(SC_FACTORS[type].map(f=>({...f,rating:''})));
+  calcScore();autoSave();
 }
-
-function blockerStatusChange(sel) {
-  const card = sel.closest('.blocker-card');
-  card.classList.toggle('bc-resolved', sel.value==='resolved');
-  const stCls = {open:'st-blocked',inprog:'st-warn',resolved:'st-done'};
-  sel.className = 'phase-status '+(stCls[sel.value]||'st-blocked');
+function buildScorecardFactors(factors){const b=document.getElementById('sc-factor-board');b.innerHTML='';factors.forEach(f=>b.appendChild(makeScorecardFactor(f)));}
+function makeScorecardFactor(f={}){
+  const rC={high:'sr-high',med:'sr-med',low:'sr-low','':'sr-none'}[f.rating||'']||'sr-none';
+  const rw={high:'sf-high',med:'sf-med',low:'sf-low','':''}[f.rating||'']||'';
+  const el=document.createElement('div');el.className='sc-factor '+rw;
+  el.innerHTML=`<input class="sc-factor-name" value="${f.name||''}" placeholder="Factor name" oninput="autoSave()"><input class="sc-factor-note" value="${f.note||''}" placeholder="Notes" oninput="autoSave()"><select class="sc-rating ${rC}" onchange="scRatingChange(this);autoSave()"><option value="">— Rate</option><option value="low"${f.rating==='low'?' selected':''}>Low</option><option value="med"${f.rating==='med'?' selected':''}>Medium</option><option value="high"${f.rating==='high'?' selected':''}>High</option></select><button class="phase-del" onclick="this.closest('.sc-factor').remove();calcScore();autoSave()">×</button>`;
+  return el;
 }
-
-function generateUpdate() {
-  const name = activeId ? clients[activeId].name : 'Client';
-  const date  = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-
-  // phases
-  const phRows = [...document.querySelectorAll('#phase-board .phase-row')];
-  const phDone    = phRows.filter(r=>r.classList.contains('ph-done')).map(r=>`✓ ${r.querySelector('.phase-name').value}`).join('\n');
-  const phActive  = phRows.filter(r=>r.classList.contains('ph-active')).map(r=>{
-    const due = r.querySelectorAll('input')[2].value;
-    return `→ ${r.querySelector('.phase-name').value}${due?' (due '+due+')':''}`;
-  }).join('\n');
-  const phBlocked = phRows.filter(r=>r.classList.contains('ph-blocked')).map(r=>`🔴 ${r.querySelector('.phase-name').value}`).join('\n');
-  const phTodo    = phRows.filter(r=>!r.classList.contains('ph-done')&&!r.classList.contains('ph-active')&&!r.classList.contains('ph-blocked')).map(r=>`○ ${r.querySelector('.phase-name').value}`).join('\n');
-
-  // blockers
-  const bCards = [...document.querySelectorAll('#blocker-board .blocker-card')].filter(c=>!c.classList.contains('bc-resolved'));
-  const bLines = bCards.map(c=>{
-    const pri = c.querySelector('.bl-priority').value.toUpperCase();
-    const desc = c.querySelectorAll('input')[0].value||'Unnamed blocker';
-    const owner = c.querySelectorAll('input')[1].value;
-    return `${pri}: ${desc}${owner?' — Owner: '+owner:''}`;
-  }).join('\n');
-
-  const txt = [
-    `${name} × WM — Weekly Status Update`,
-    date,
-    '',
-    '── PHASES ─────────────────────────',
-    phDone    ? 'COMPLETED\n'+phDone    : '',
-    phActive  ? 'IN PROGRESS\n'+phActive  : '',
-    phBlocked ? 'BLOCKED\n'+phBlocked   : '',
-    phTodo    ? 'UPCOMING\n'+phTodo     : '',
-    '',
-    '── OPEN BLOCKERS ───────────────────',
-    bLines || 'No open blockers 🎉',
-    '',
-    '── NEXT STEPS ──────────────────────',
-    phActive ? phActive.replace(/^→ /gm,'• ') : 'See phases above.',
-  ].filter(x=>x!==null&&x!=='').join('\n');
-
-  document.getElementById('update-text').textContent = txt;
+function addScorecardFactor(){document.getElementById('sc-factor-board').appendChild(makeScorecardFactor({name:'',note:'',rating:''}));autoSave();}
+function scRatingChange(sel){const row=sel.closest('.sc-factor');row.classList.remove('sf-high','sf-med','sf-low');if(sel.value)row.classList.add('sf-'+sel.value);sel.className='sc-rating '+({high:'sr-high',med:'sr-med',low:'sr-low','':'sr-none'}[sel.value]||'sr-none');calcScore();}
+function calcScore(){
+  const factors=[...document.querySelectorAll('#sc-factor-board .sc-factor')];
+  const rated=factors.filter(f=>f.querySelector('.sc-rating').value);
+  if(!rated.length){setScoreTier('none');updateScorecardExport();return;}
+  const highs=rated.filter(f=>f.querySelector('.sc-rating').value==='high').length;
+  const meds=rated.filter(f=>f.querySelector('.sc-rating').value==='med').length;
+  const score=((highs*3)+(meds*2))/(rated.length*3);
+  let tier='green';if(score>=0.55)tier='red';else if(score>=0.28)tier='amber';
+  setScoreTier(tier,score,highs,meds,rated.length);updateScorecardExport();
 }
-
-function copyUpdate() {
-  const txt = document.getElementById('update-text').textContent;
-  if(txt.includes('Click "Regenerate"')) { generateUpdate(); }
-  setTimeout(()=>{
-    navigator.clipboard.writeText(document.getElementById('update-text').textContent).then(()=>toast('Weekly update copied'));
-  }, 50);
+function setScoreTier(tier,score=0,highs=0,meds=0,total=0){
+  const result=document.getElementById('sc-result'),label=document.getElementById('sc-tier-label'),sub=document.getElementById('sc-tier-sub'),fill=document.getElementById('sc-score-fill'),recs=document.getElementById('sc-recs');
+  result.className='sc-result';label.className='sc-result-tier';
+  if(tier==='none'){label.textContent='—';sub.textContent='Rate factors to see your score.';fill.style.width='0%';recs.innerHTML='';return;}
+  const pct=Math.round(score*100);
+  const tD={green:{label:'LOW RISK',color:'var(--green)',fill:'#22C55E',sub:`${highs} high, ${meds} medium out of ${total} factors. Low complexity.`},amber:{label:'MEDIUM RISK',color:'var(--amber)',fill:'#F59E0B',sub:`${highs} high, ${meds} medium out of ${total} factors. Add buffer and review sign-off process.`},red:{label:'HIGH RISK',color:'var(--red)',fill:'#EF4444',sub:`${highs} high, ${meds} medium out of ${total} factors. High complexity — phased approach required.`}}[tier];
+  result.classList.add('tier-'+tier);label.classList.add('tier-'+tier);label.textContent=tD.label;sub.textContent=tD.sub;fill.style.width=Math.max(8,pct)+'%';fill.style.background=tD.fill;
+  recs.innerHTML=(SC_RECS[tier]||[]).map(r=>`<div class="sc-rec"><div class="sc-rec-dot" style="background:${tD.fill}"></div><span>${r}</span></div>`).join('');
 }
-
-// ── CHIPS ──
-function toggleChip(el){
-  el.classList.toggle('selected');
-  document.getElementById('meta-esp').value=[...document.querySelectorAll('#esp-chips .chip.selected')].map(c=>c.textContent).join(', ')||'';
-  autoSave();
+function updateScorecardExport(){
+  const name=activeId?clients[activeId].name:'Client';
+  const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const type=document.querySelector('[id^=sc-nav-].active')?.textContent||'—';
+  const tier=document.getElementById('sc-tier-label').textContent||'—';
+  const factors=[...document.querySelectorAll('#sc-factor-board .sc-factor')];
+  const highF=factors.filter(f=>f.querySelector('.sc-rating').value==='high').map(f=>`  ▲ ${f.querySelector('.sc-factor-name').value}`).join('\n');
+  const medF=factors.filter(f=>f.querySelector('.sc-rating').value==='med').map(f=>`  ◆ ${f.querySelector('.sc-factor-name').value}`).join('\n');
+  const lowF=factors.filter(f=>f.querySelector('.sc-rating').value==='low').map(f=>`  ▼ ${f.querySelector('.sc-factor-name').value}`).join('\n');
+  const recs=(SC_RECS[{'LOW RISK':'green','MEDIUM RISK':'amber','HIGH RISK':'red'}[tier]]||[]).map(r=>`  • ${r}`).join('\n');
+  const txt=[`WM MIGRATION RISK SCORECARD`,`${name} — ${type}`,date,'',`RISK TIER: ${tier}`,'',`SOURCE ESP:    ${document.getElementById('sc-source-esp').value||'—'}`,`TARGET ESP:    ${document.getElementById('sc-target-esp').value||'—'}`,`PROFILES:      ${document.getElementById('sc-profiles').value||'—'}`,`CAMPAIGNS:     ${document.getElementById('sc-camp-count').value||'—'}`,`TIMELINE:      ${document.getElementById('sc-timeline').value||'—'}`,'',`HIGH RISK FACTORS`,highF||'  None','',`MEDIUM RISK FACTORS`,medF||'  None','',`LOW RISK FACTORS`,lowF||'  None','',`RECOMMENDATIONS`,recs||'  Rate factors above.'].join('\n');
+  document.getElementById('sc-export-preview').textContent=txt;
 }
+function copyScorecardSummary(){navigator.clipboard.writeText(document.getElementById('sc-export-preview').textContent).then(()=>toast('Scorecard copied'));}
 
-// ── COPY ──
-function copySummary(){ navigator.clipboard.writeText(document.getElementById('summary-text').innerText).then(()=>toast('Summary copied')); }
-function copyWeeklyUpdate(){
-  if(!activeId){toast('No client selected');return;}
-  const name=clients[activeId].name;
-  const blocked=[...document.querySelectorAll('#page-checklist .check-item.blocked')].map(el=>'🔴 '+el.querySelector('.check-title').textContent.trim()).join('\n');
-  const inprog=[...document.querySelectorAll('#page-checklist .check-item.flagged')].map(el=>'→ '+el.querySelector('.check-title').textContent.trim()).join('\n');
-  const done=[...document.querySelectorAll('#page-checklist .check-item.checked')].map(el=>'✓ '+el.querySelector('.check-title').textContent.trim()).join('\n');
-  const pct=document.getElementById('progress-pct').textContent;
-  navigator.clipboard.writeText(`${name} × WM — Weekly Status Update\n${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}\nOverall progress: ${pct}\n\nCOMPLETED\n${done||'Nothing completed yet'}\n\nIN PROGRESS\n${inprog||'Nothing in progress'}\n\nBLOCKED — ACTION NEEDED\n${blocked||'No blockers'}`).then(()=>toast('Weekly update copied'));
-}
-
-// ── TOAST ──
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2400);}
 </script>
 </body>
